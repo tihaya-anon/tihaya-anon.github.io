@@ -1,0 +1,2 @@
+var a,n;function t(){if(n)return a;n=1,a=e,e.displayName="yang",e.aliases=[];function e(r){r.languages.yang={comment:/\/\*[\s\S]*?\*\/|\/\/.*/,string:{pattern:/"(?:[^\\"]|\\.)*"|'[^']*'/,greedy:!0},keyword:{pattern:/(^|[{};\r\n][ \t]*)[a-z_][\w.-]*/i,lookbehind:!0},namespace:{pattern:/(\s)[a-z_][\w.-]*(?=:)/i,lookbehind:!0},boolean:/\b(?:false|true)\b/,operator:/\+/,punctuation:/[{};:]/}}return a}export{t as r};
+//# sourceMappingURL=vendor_refractor_lang_yang.js-CZJCXV5T.js.map

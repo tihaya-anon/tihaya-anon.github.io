@@ -1,0 +1,2 @@
+var a,o;function n(){if(o)return a;o=1,a=r;var e=r.prototype;e.space=null,e.attribute=null,e.property=null,e.boolean=!1,e.booleanish=!1,e.overloadedBoolean=!1,e.number=!1,e.commaSeparated=!1,e.spaceSeparated=!1,e.commaOrSpaceSeparated=!1,e.mustUseProperty=!1,e.defined=!1;function r(t,l){this.property=t,this.attribute=l}return a}export{n as r};
+//# sourceMappingURL=vendor_property-information_lib_util_info.js-DpstdOiB.js.map

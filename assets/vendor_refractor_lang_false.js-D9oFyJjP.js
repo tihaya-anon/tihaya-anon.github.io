@@ -1,0 +1,2 @@
+var e,r;function s(){if(r)return e;r=1,e=a,a.displayName="$false",a.aliases=[];function a(t){(function(n){n.languages.false={comment:{pattern:/\{[^}]*\}/},string:{pattern:/"[^"]*"/,greedy:!0},"character-code":{pattern:/'(?:[^\r]|\r\n?)/,alias:"number"},"assembler-code":{pattern:/\d+`/,alias:"important"},number:/\d+/,operator:/[-!#$%&'*+,./:;=>?@\\^_`|~ßø]/,punctuation:/\[|\]/,variable:/[a-z]/,"non-standard":{pattern:/[()<BDO®]/,alias:"bold"}}})(t)}return e}export{s as r};
+//# sourceMappingURL=vendor_refractor_lang_false.js-D9oFyJjP.js.map

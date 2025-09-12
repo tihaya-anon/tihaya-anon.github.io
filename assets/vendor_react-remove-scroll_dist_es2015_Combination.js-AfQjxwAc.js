@@ -1,0 +1,2 @@
+import{_ as s}from"./vendor_tslib_tslib.es6.mjs-CvpyDmub.js";import{r}from"./vendor_react_index.js_commonjs-es-import-Dw0Sl0kA.js";import{R as e}from"./vendor_react-remove-scroll_dist_es2015_UI.js-DtunMXQP.js";import{S as m}from"./vendor_react-remove-scroll_dist_es2015_sidecar.js-DwjPogHH.js";var t=r.forwardRef(function(a,o){return r.createElement(e,s({},a,{ref:o,sideCar:m}))});t.classNames=e.classNames;export{t as R};
+//# sourceMappingURL=vendor_react-remove-scroll_dist_es2015_Combination.js-AfQjxwAc.js.map

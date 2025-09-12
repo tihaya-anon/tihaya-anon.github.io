@@ -1,0 +1,2 @@
+var n,m;function l(){if(m)return n;m=1,n=e,e.displayName="xmlDoc",e.aliases=[];function e(i){(function(a){function t(c,u){a.languages[c]&&a.languages.insertBefore(c,"comment",{"doc-comment":u})}var r=a.languages.markup.tag,o={pattern:/\/\/\/.*/,greedy:!0,alias:"comment",inside:{tag:r}},s={pattern:/'''.*/,greedy:!0,alias:"comment",inside:{tag:r}};t("csharp",o),t("fsharp",o),t("vbnet",s)})(i)}return n}export{l as r};
+//# sourceMappingURL=vendor_refractor_lang_xml-doc.js-h9QTbKfw.js.map

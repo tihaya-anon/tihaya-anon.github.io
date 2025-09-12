@@ -1,0 +1,2 @@
+var r,n;function t(){if(n)return r;n=1,r=e,e.displayName="ebnf",e.aliases=[];function e(a){a.languages.ebnf={comment:/\(\*[\s\S]*?\*\)/,string:{pattern:/"[^"\r\n]*"|'[^'\r\n]*'/,greedy:!0},special:{pattern:/\?[^?\r\n]*\?/,greedy:!0,alias:"class-name"},definition:{pattern:/^([\t ]*)[a-z]\w*(?:[ \t]+[a-z]\w*)*(?=\s*=)/im,lookbehind:!0,alias:["rule","keyword"]},rule:/\b[a-z]\w*(?:[ \t]+[a-z]\w*)*\b/i,punctuation:/\([:/]|[:/]\)|[.,;()[\]{}]/,operator:/[-=|*/!]/}}return r}export{t as r};
+//# sourceMappingURL=vendor_refractor_lang_ebnf.js-BpvgINyd.js.map

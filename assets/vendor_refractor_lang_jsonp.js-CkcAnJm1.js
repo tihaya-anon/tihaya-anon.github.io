@@ -1,0 +1,2 @@
+import{r as o}from"./vendor_refractor_lang_json.js-BESjz4hO.js";var r,s;function t(){if(s)return r;s=1;var a=o();r=e,e.displayName="jsonp",e.aliases=[];function e(n){n.register(a),n.languages.jsonp=n.languages.extend("json",{punctuation:/[{}[\]();,.]/}),n.languages.insertBefore("jsonp","punctuation",{function:/(?!\s)[_$a-zA-Z\xA0-\uFFFF](?:(?!\s)[$\w\xA0-\uFFFF])*(?=\s*\()/})}return r}export{t as r};
+//# sourceMappingURL=vendor_refractor_lang_jsonp.js-CkcAnJm1.js.map

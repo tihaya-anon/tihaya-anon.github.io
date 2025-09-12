@@ -1,0 +1,2 @@
+import{r as h}from"./vendor_xtend_immutable.js-VQg9yHl6.js";import{r as s}from"./vendor_property-information_lib_util_schema.js-BPMa7MOz.js";var e,m;function f(){if(m)return e;m=1;var a=h(),o=s();e=v;function v(n){for(var i=n.length,p=[],u=[],t=-1,r,l;++t<i;)r=n[t],p.push(r.property),u.push(r.normal),l=r.space;return new o(a.apply(null,p),a.apply(null,u),l)}return e}export{f as r};
+//# sourceMappingURL=vendor_property-information_lib_util_merge.js-MZDFPcpR.js.map

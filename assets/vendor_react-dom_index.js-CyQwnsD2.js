@@ -1,0 +1,2 @@
+import{r}from"./vendor_react-dom_index.js_commonjs-module-DhgsKDqp.js";import{r as t}from"./vendor_react-dom_cjs_react-dom.production.js-D7LXlrPf.js";var o;function n(){if(o)return r.exports;o=1;function e(){if(!(typeof __REACT_DEVTOOLS_GLOBAL_HOOK__>"u"||typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.checkDCE!="function"))try{__REACT_DEVTOOLS_GLOBAL_HOOK__.checkDCE(e)}catch(_){console.error(_)}}return e(),r.exports=t(),r.exports}export{n as r};
+//# sourceMappingURL=vendor_react-dom_index.js-CyQwnsD2.js.map

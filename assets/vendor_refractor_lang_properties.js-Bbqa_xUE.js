@@ -1,0 +1,2 @@
+var e,t;function s(){if(t)return e;t=1,e=r,r.displayName="properties",r.aliases=[];function r(n){n.languages.properties={comment:/^[ \t]*[#!].*$/m,"attr-value":{pattern:/(^[ \t]*(?:\\(?:\r\n|[\s\S])|[^\\\s:=])+(?: *[=:] *(?! )| ))(?:\\(?:\r\n|[\s\S])|[^\\\r\n])+/m,lookbehind:!0},"attr-name":/^[ \t]*(?:\\(?:\r\n|[\s\S])|[^\\\s:=])+(?= *[=:]| )/m,punctuation:/[=:]/}}return e}export{s as r};
+//# sourceMappingURL=vendor_refractor_lang_properties.js-Bbqa_xUE.js.map

@@ -1,0 +1,28 @@
+{
+  "education": {
+    "title": "Education",
+    "content": [
+      {
+        "school": "The University of Hong Kong",
+        "time": "2025-2026",
+        "major": "Computer Science"
+      },
+      {
+        "school": "Tongji University",
+        "time": "2021-2025",
+        "major": "Information Management and Information System"
+      }
+    ]
+  },
+  "publish": {
+    "title": "Publish DB",
+    "description": "Publish DB Description",
+    "action": "Publish DB Action",
+    "content": "Publish DB Content",
+    "footer": "Publish DB Footer"
+  },
+  "self-intro": {
+    "title": "About me",
+    "description": "I don't know what to write here"
+  }
+}

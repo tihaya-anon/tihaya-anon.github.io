@@ -1,0 +1,2 @@
+import{r as o}from"./vendor_react_index.js_commonjs-es-import-Dw0Sl0kA.js";import{u as n}from"./vendor__radix-ui_react-use-callback-ref_dist_index.mjs_undefined-Dl_A1wx2.js";function p(a,e=globalThis?.document){const t=n(a);o.useEffect(()=>{const r=s=>{s.key==="Escape"&&t(s)};return e.addEventListener("keydown",r,{capture:!0}),()=>e.removeEventListener("keydown",r,{capture:!0})},[t,e])}export{p as u};
+//# sourceMappingURL=vendor__radix-ui_react-use-escape-keydown_dist_index.mjs_undefined-BsPifYaO.js.map

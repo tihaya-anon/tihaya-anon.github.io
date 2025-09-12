@@ -1,0 +1,2 @@
+import{b as o,_ as s}from"./vendor_tslib_tslib.es6.mjs-CvpyDmub.js";import{r as d}from"./vendor_react_index.js_commonjs-es-import-Dw0Sl0kA.js";var a=function(r){var e=r.sideCar,i=o(r,["sideCar"]);if(!e)throw new Error("Sidecar: please provide `sideCar` property to import the right car");var t=e.read();if(!t)throw new Error("Sidecar medium not found");return d.createElement(t,s({},i))};a.isSideCarExport=!0;function m(r,e){return r.useMedium(e),a}export{m as e};
+//# sourceMappingURL=vendor_use-sidecar_dist_es2015_exports.js-CZCuNFyJ.js.map

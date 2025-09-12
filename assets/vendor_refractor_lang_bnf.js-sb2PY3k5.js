@@ -1,0 +1,2 @@
+var a,e;function t(){if(e)return a;e=1,a=n,n.displayName="bnf",n.aliases=["rbnf"];function n(r){r.languages.bnf={string:{pattern:/"[^\r\n"]*"|'[^\r\n']*'/},definition:{pattern:/<[^<>\r\n\t]+>(?=\s*::=)/,alias:["rule","keyword"],inside:{punctuation:/^<|>$/}},rule:{pattern:/<[^<>\r\n\t]+>/,inside:{punctuation:/^<|>$/}},operator:/::=|[|()[\]{}*+?]|\.{3}/},r.languages.rbnf=r.languages.bnf}return a}export{t as r};
+//# sourceMappingURL=vendor_refractor_lang_bnf.js-sb2PY3k5.js.map

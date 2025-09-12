@@ -1,0 +1,2 @@
+import{r as a}from"./vendor_property-information_lib_util_create.js-nTIjxLML.js";import{r as i}from"./vendor_property-information_lib_util_case-insensitive-transform.js-BMNzHklY.js";var r,e;function l(){if(e)return r;e=1;var n=a(),s=i();return r=n({space:"xmlns",attributes:{xmlnsxlink:"xmlns:xlink"},transform:s,properties:{xmlns:null,xmlnsXLink:null}}),r}export{l as r};
+//# sourceMappingURL=vendor_property-information_lib_xmlns.js-BYjE_MH0.js.map

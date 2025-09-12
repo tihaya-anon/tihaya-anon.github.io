@@ -1,0 +1,2 @@
+import{c as r}from"./vendor_react-dom_client.js_commonjs-module-Dz70iIzG.js";import{r as o}from"./vendor_react-dom_cjs_react-dom-client.production.js-Ccqg5F12.js";var t;function i(){if(t)return r.exports;t=1;function e(){if(!(typeof __REACT_DEVTOOLS_GLOBAL_HOOK__>"u"||typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.checkDCE!="function"))try{__REACT_DEVTOOLS_GLOBAL_HOOK__.checkDCE(e)}catch(_){console.error(_)}}return e(),r.exports=o(),r.exports}export{i as r};
+//# sourceMappingURL=vendor_react-dom_client.js-BzXBLVw6.js.map

@@ -1,0 +1,2 @@
+import{_ as t}from"./vendor__babel_runtime_helpers_esm_typeof.js_undefined-QjJsDpFa.js";import{_ as n}from"./vendor__babel_runtime_helpers_esm_assertThisInitialized.js_undefined-B9jnkVVz.js";function s(o,r){if(r&&(t(r)=="object"||typeof r=="function"))return r;if(r!==void 0)throw new TypeError("Derived constructors may only return object or undefined");return n(o)}export{s as _};
+//# sourceMappingURL=vendor__babel_runtime_helpers_esm_possibleConstructorReturn.js_undefined-D_sB58gs.js.map

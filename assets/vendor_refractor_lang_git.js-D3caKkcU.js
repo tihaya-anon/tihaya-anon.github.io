@@ -1,0 +1,2 @@
+var e,i;function m(){if(i)return e;i=1,e=t,t.displayName="git",t.aliases=[];function t(r){r.languages.git={comment:/^#.*/m,deleted:/^[-–].*/m,inserted:/^\+.*/m,string:/("|')(?:\\.|(?!\1)[^\\\r\n])*\1/,command:{pattern:/^.*\$ git .*$/m,inside:{parameter:/\s--?\w+/}},coord:/^@@.*@@$/m,"commit-sha1":/^commit \w{40}$/m}}return e}export{m as r};
+//# sourceMappingURL=vendor_refractor_lang_git.js-D3caKkcU.js.map

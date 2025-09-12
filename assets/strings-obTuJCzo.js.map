@@ -1,0 +1,1 @@
+{"version":3,"file":"strings-obTuJCzo.js","sources":["../../frontend/src/constants/strings.ts"],"sourcesContent":["export const AUTHOR_NAME = \"Sean Luo\";"],"names":["AUTHOR_NAME"],"mappings":"AAAO,MAAMA,EAAc"}

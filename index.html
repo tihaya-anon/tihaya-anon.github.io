@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <!-- GitHub Pages SPA routing -->
+  <script>
+    (function() {
+      // Check if we need to redirect
+      const redirectUrl = sessionStorage.getItem('redirectUrl');
+      if (redirectUrl) {
+        sessionStorage.removeItem('redirectUrl');
+        // Small delay to ensure the app has time to initialize
+        setTimeout(() => {
+          history.replaceState(null, null, redirectUrl);
+          // Force a re-render if needed
+          window.dispatchEvent(new Event('popstate'));
+        }, 300);
+      }
+    })();
+  </script>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sean Luo</title>
+    <script type="module" crossorigin src="/assets/index-DbnLTSO6.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/vendor_react_jsx-runtime.js_commonjs-module-DrftVG1b.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor_react_cjs_react-jsx-runtime.production.js_commonjs-exports-Y3wesJj2.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor_react_cjs_react-jsx-runtime.production.js-eETAB5Al.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor_react_jsx-runtime.js-CaAktsAJ.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor_react_jsx-runtime.js_commonjs-es-import-CRFS_H0z.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor_comma-separated-tokens_index.js_commonjs-exports-CmYd1H8K.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor_comma-separated-tokens_index.js-DIoklWKI.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor_react_index.js_commonjs-module-DhgsKDqp.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor_react_cjs_react.production.js_commonjs-exports-Y3wesJj2.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor_react_cjs_react.production.js-D2dYT6pU.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor_react_index.js-Drm3OuAA.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor_react_index.js_commonjs-es-import-Dw0Sl0kA.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor_react-dom_client.js_commonjs-module-Dz70iIzG.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor_react-dom_cjs_react-dom-client.production.js_commonjs-exports-Y3wesJj2.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor_scheduler_index.js_commonjs-module-FUNcL9I0.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor_scheduler_cjs_scheduler.production.js_commonjs-exports-CXnJwLpf.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor_scheduler_cjs_scheduler.production.js-xp1shC5h.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor_scheduler_index.js-B7-Q9Yd5.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor_react-dom_index.js_commonjs-module-DhgsKDqp.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor_react-dom_cjs_react-dom.production.js_commonjs-exports-Y3wesJj2.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor_react-dom_cjs_react-dom.production.js-D7LXlrPf.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor_react-dom_index.js-CyQwnsD2.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor_react-dom_cjs_react-dom-client.production.js-Ccqg5F12.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor_react-dom_client.js-BzXBLVw6.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor_react-dom_client.js_commonjs-es-import-DakJ2hgu.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor__radix-ui_react-compose-refs_dist_index.mjs_undefined-Ccbbv5wq.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor__radix-ui_react-slot_dist_index.mjs_undefined-D3ZM2AWI.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor_clsx_dist_clsx.mjs-B-dksMZM.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor_class-variance-authority_dist_index.mjs-QU3RNBL6.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor_tailwind-merge_dist_bundle-mjs.mjs-D6B6e0vX.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor_lucide-react_dist_esm_shared_src_utils.js-DMyOBWuq.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor_lucide-react_dist_esm_defaultAttributes.js-mhLtDFsA.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor_lucide-react_dist_esm_Icon.js-DOaX7IY-.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor_lucide-react_dist_esm_createLucideIcon.js-y9d1XMpi.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor_lucide-react_dist_esm_icons_moon.js-BeiDitRg.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor_lucide-react_dist_esm_icons_sun.js-ZdvVATSn.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor_react-router_dist_development_chunk-PVWAREVJ.mjs-C5X9k845.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor_lucide-react_dist_esm_icons_book.js-C_axHCYa.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor_lucide-react_dist_esm_icons_user.js-DvZR8OaU.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor_react-syntax-highlighter_dist_esm_async-languages_hljs.js-BXl3LOEh.js">
+    <link rel="stylesheet" crossorigin href="/assets/index-Bf4pbqEr.css">
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>

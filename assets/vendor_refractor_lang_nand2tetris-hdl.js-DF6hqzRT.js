@@ -1,0 +1,2 @@
+var e,t;function r(){if(t)return e;t=1,e=n,n.displayName="nand2tetrisHdl",n.aliases=[];function n(a){a.languages["nand2tetris-hdl"]={comment:/\/\/.*|\/\*[\s\S]*?(?:\*\/|$)/,keyword:/\b(?:BUILTIN|CHIP|CLOCKED|IN|OUT|PARTS)\b/,boolean:/\b(?:false|true)\b/,function:/\b[A-Za-z][A-Za-z0-9]*(?=\()/,number:/\b\d+\b/,operator:/=|\.\./,punctuation:/[{}[\];(),:]/}}return e}export{r};
+//# sourceMappingURL=vendor_refractor_lang_nand2tetris-hdl.js-DF6hqzRT.js.map

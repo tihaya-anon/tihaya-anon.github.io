@@ -1,0 +1,2 @@
+var o,e;function t(){if(e)return o;e=1,o=r,r.displayName="prolog",r.aliases=[];function r(n){n.languages.prolog={comment:{pattern:/\/\*[\s\S]*?\*\/|%.*/,greedy:!0},string:{pattern:/(["'])(?:\1\1|\\(?:\r\n|[\s\S])|(?!\1)[^\\\r\n])*\1(?!\1)/,greedy:!0},builtin:/\b(?:fx|fy|xf[xy]?|yfx?)\b/,function:/\b[a-z]\w*(?:(?=\()|\/\d+)/,number:/\b\d+(?:\.\d*)?/,operator:/[:\\=><\-?*@\/;+^|!$.]+|\b(?:is|mod|not|xor)\b/,punctuation:/[(){}\[\],]/}}return o}export{t as r};
+//# sourceMappingURL=vendor_refractor_lang_prolog.js-BPDwqFtH.js.map

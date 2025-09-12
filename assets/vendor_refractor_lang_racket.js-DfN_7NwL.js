@@ -1,0 +1,2 @@
+import{r as g}from"./vendor_refractor_lang_scheme.js-Cscf027c.js";var r,t;function u(){if(t)return r;t=1;var n=g();r=a,a.displayName="racket",a.aliases=["rkt"];function a(e){e.register(n),e.languages.racket=e.languages.extend("scheme",{"lambda-parameter":{pattern:/([(\[]lambda\s+[(\[])[^()\[\]'\s]+/,lookbehind:!0}}),e.languages.insertBefore("racket","string",{lang:{pattern:/^#lang.+/m,greedy:!0,alias:"keyword"}}),e.languages.rkt=e.languages.racket}return r}export{u as r};
+//# sourceMappingURL=vendor_refractor_lang_racket.js-DfN_7NwL.js.map

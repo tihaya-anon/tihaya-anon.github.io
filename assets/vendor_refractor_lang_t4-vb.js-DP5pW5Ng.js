@@ -1,0 +1,2 @@
+import{r as u}from"./vendor_refractor_lang_t4-templating.js-B5EzSFYT.js";import{r as b}from"./vendor_refractor_lang_vbnet.js-BmAB8qAF.js";var t,a;function s(){if(a)return t;a=1;var n=u(),i=b();t=e,e.displayName="t4Vb",e.aliases=[];function e(r){r.register(n),r.register(i),r.languages["t4-vb"]=r.languages["t4-templating"].createT4("vbnet")}return t}export{s as r};
+//# sourceMappingURL=vendor_refractor_lang_t4-vb.js-DP5pW5Ng.js.map

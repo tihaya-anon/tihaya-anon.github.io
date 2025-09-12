@@ -1,0 +1,2 @@
+var r,e;function i(){if(e)return r;e=1,r=a,a.displayName="brainfuck",a.aliases=[];function a(n){n.languages.brainfuck={pointer:{pattern:/<|>/,alias:"keyword"},increment:{pattern:/\+/,alias:"inserted"},decrement:{pattern:/-/,alias:"deleted"},branching:{pattern:/\[|\]/,alias:"important"},operator:/[.,]/,comment:/\S+/}}return r}export{i as r};
+//# sourceMappingURL=vendor_refractor_lang_brainfuck.js-CwlmDMXn.js.map

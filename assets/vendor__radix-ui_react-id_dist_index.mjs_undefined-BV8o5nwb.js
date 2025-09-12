@@ -1,0 +1,2 @@
+import{r as e,R as s}from"./vendor_react_index.js_commonjs-es-import-Dw0Sl0kA.js";import{u}from"./vendor__radix-ui_react-use-layout-effect_dist_index.mjs_undefined-DhPFT9DF.js";var c=s[" useId ".trim().toString()]||(()=>{}),i=0;function f(t){const[r,a]=e.useState(c());return u(()=>{a(o=>o??String(i++))},[t]),t||(r?`radix-${r}`:"")}export{f as u};
+//# sourceMappingURL=vendor__radix-ui_react-id_dist_index.mjs_undefined-BV8o5nwb.js.map

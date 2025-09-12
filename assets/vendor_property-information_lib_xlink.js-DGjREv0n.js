@@ -1,0 +1,2 @@
+import{r as u}from"./vendor_property-information_lib_util_create.js-nTIjxLML.js";var r,n;function k(){if(n)return r;n=1;var e=u();r=e({space:"xlink",transform:l,properties:{xLinkActuate:null,xLinkArcRole:null,xLinkHref:null,xLinkRole:null,xLinkShow:null,xLinkTitle:null,xLinkType:null}});function l(t,i){return"xlink:"+i.slice(5).toLowerCase()}return r}export{k as r};
+//# sourceMappingURL=vendor_property-information_lib_xlink.js-DGjREv0n.js.map
