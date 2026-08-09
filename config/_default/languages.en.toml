@@ -1,0 +1,27 @@
+disabled = false
+locale = "en"
+label = "English"
+weight = 1
+title = "tihaya-anon"
+
+[params]
+  displayName = "English"
+  isoCode = "en"
+  rtl = false
+  dateFormat = "2 January 2006"
+  logo = "img/logo.svg"
+  # secondaryLogo = "img/secondary-logo.png"
+  description = "Personal blog for tihaya-anon."
+  copyright = "Copyright (c) { year } tihaya-anon"
+
+[params.author]
+  name = "tihaya-anon"
+  email = "chihaya_anon_0908@outlook.com"
+  image = "https://avatars.githubusercontent.com/u/189986198?v=4"
+  imageQuality = 96
+  headline = "Personal blog by tihaya-anon"
+  bio = "GitHub: https://github.com/tihaya-anon"
+  links = [
+    { email = "mailto:chihaya_anon_0908@outlook.com" },
+    { github = "https://github.com/tihaya-anon" },
+  ]

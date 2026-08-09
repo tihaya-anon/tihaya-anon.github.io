@@ -1,0 +1,5 @@
+{{ $logo := resources.Get site.Params.logo }}
+{{ with $logo }}
+  <link rel="icon" type="{{ .MediaType.Type }}" href="{{ .RelPermalink }}">
+  <link rel="shortcut icon" href="{{ .RelPermalink }}">
+{{ end }}
