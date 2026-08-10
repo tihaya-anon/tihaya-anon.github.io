@@ -91,7 +91,9 @@ $$
 \end{aligned}
 $$
 
-The loop terminates with \( \ell + 1 = r \), at which point \( (\ell,r) \) contains no index. If \( r < n \), then \( r \) is the first index for which \( f(\texttt{seq},r) \ge t \); otherwise, no such index exists.
+The loop terminates with \( \ell + 1 = r \), at which point \( (\ell,r) \) contains no index. Then \( \ell \) is the last index for which \( f(\texttt{seq},\ell) < t \), unless \( \ell = -1 \), in which case no such index exists. Likewise, \( r \) is the first index for which \( f(\texttt{seq},r) \ge t \), unless \( r = n \), in which case no such index exists.
+
+For a sorted sequence, this handles the boundary cases without special branches: if \( t \le f(\texttt{seq},0) \), then \( (\ell,r) = (-1,0) \); if \( t > f(\texttt{seq},n-1) \), then \( (\ell,r) = (n-1,n) \). For an empty sequence, \( n = 0 \) and the initial interval \( (-1,0) \) already satisfies the termination condition.
 
 Equivalently, the open interval \( (\ell,r) \) contains every unchecked index, while the checked regions maintain:
 
