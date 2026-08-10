@@ -1,0 +1,8 @@
+{{ with resources.Get "css/site/main.css" }}
+  {{ $css := . | css.Build | resources.Fingerprint ($.Params.fingerprintAlgorithm | default "sha512") }}
+  <link
+    type="text/css"
+    rel="stylesheet"
+    href="{{ $css.RelPermalink }}"
+    integrity="{{ $css.Data.Integrity }}">
+{{ end }}

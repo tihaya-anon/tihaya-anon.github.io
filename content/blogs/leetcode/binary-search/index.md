@@ -68,6 +68,17 @@ while R - L > 1:
 
 The uppercase Python names are mutable boundaries, not constants. They are capitalized solely to make the left boundary distinct from the digit `1`; the mathematics uses conventional \( \ell \) and \( r \) instead.
 
+For a concrete example, take `n = 5`. The virtual boundaries sit at `-1` and `n`, while the real indices are `0` through `4`. Initially every real index is unchecked; the midpoint is `2`.
+
+{{< binary-search-axis
+  labels="-1,0,1,2,3,4,n"
+  states="pass,unchecked,unchecked,unchecked,unchecked,unchecked,fail"
+  left="0"
+  middle="3"
+  right="6"
+  caption="Initial partition: L = -1 passes, R = n fails, and m = 2 is checked next."
+>}}
+
 > [!TIP]
 > Use `m = L + R >> 1` to type fast. In fixed-width integer languages, use `m = L + (R - L) // 2` to avoid overflow.
 
@@ -94,9 +105,25 @@ Equivalently, the open interval \( (\ell,r) \) contains every unchecked index, w
 
 Because \( m \in (\ell,r) \), we have \( \ell < m \). If `check(m)` passes, monotonicity implies that every index to its left also passes. Therefore, updating \( \ell \gets m \) extends the passing region from \( (-1,\ell] \) to \( (-1,m] \), while \( (m,r) \) becomes the new unchecked interval.
 
+{{< binary-search-axis
+  labels="-1,0,1,2,3,4,n"
+  states="pass,pass,pass,pass,unchecked,unchecked,fail"
+  left="3"
+  right="6"
+  caption="After check(2) passes: L moves to 2, so only indices 3 and 4 remain unchecked."
+>}}
+
 #### When the midpoint fails
 
 Because \( m \in (\ell,r) \), we have \( m < r \). If `check(m)` fails, monotonicity implies that every index to its right also fails. Therefore, updating \( r \gets m \) extends the failing region from \( [r,n) \) to \( [m,n) \), while \( (\ell,m) \) becomes the new unchecked interval.
+
+{{< binary-search-axis
+  labels="-1,0,1,2,3,4,n"
+  states="pass,unchecked,unchecked,fail,fail,fail,fail"
+  left="0"
+  right="3"
+  caption="After check(2) fails: R moves to 2, so only indices 0 and 1 remain unchecked."
+>}}
 
 More generally, `check` may be any monotonic condition whose passing indices form a prefix. Each iteration maintains:
 

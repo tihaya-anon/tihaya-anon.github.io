@@ -1,0 +1,98 @@
+.binary-search-axis {
+  margin: 1.75rem 0;
+}
+
+.binary-search-axis svg {
+  display: block;
+  width: 100%;
+  max-width: 37rem;
+  height: auto;
+  margin: 0 auto;
+  overflow: visible;
+}
+
+.binary-search-axis__line {
+  stroke: rgba(var(--color-neutral-500), 1);
+  stroke-width: 2;
+}
+
+.binary-search-axis__point {
+  stroke-width: 2;
+}
+
+.binary-search-axis__point--pass {
+  fill: rgba(var(--color-secondary-200), 1);
+  stroke: rgba(var(--color-secondary-600), 1);
+}
+
+.binary-search-axis__point--unchecked {
+  fill: rgba(var(--color-neutral-100), 1);
+  stroke: rgba(var(--color-neutral-500), 1);
+}
+
+.binary-search-axis__point--fail {
+  fill: rgba(var(--color-primary-200), 1);
+  stroke: rgba(var(--color-primary-600), 1);
+}
+
+.binary-search-axis__index,
+.binary-search-axis__marker-label {
+  fill: currentColor;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 14px;
+  text-anchor: middle;
+}
+
+.binary-search-axis__marker-label {
+  font-weight: 700;
+}
+
+.binary-search-axis__marker {
+  stroke-width: 2;
+}
+
+.binary-search-axis__marker--left {
+  stroke: rgba(var(--color-secondary-600), 1);
+}
+
+.binary-search-axis__marker--middle {
+  stroke: rgba(var(--color-neutral-700), 1);
+}
+
+.binary-search-axis__marker--right {
+  stroke: rgba(var(--color-primary-600), 1);
+}
+
+.binary-search-axis figcaption {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  justify-content: center;
+  margin-top: 0.25rem;
+  color: rgba(var(--color-neutral-600), 1);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.dark .binary-search-axis figcaption {
+  color: rgba(var(--color-neutral-400), 1);
+}
+
+.binary-search-axis__legend {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.binary-search-axis__swatch {
+  width: 0.65rem;
+  height: 0.65rem;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+}
+
+.binary-search-axis__swatch--pass { background: rgba(var(--color-secondary-300), 1); }
+.binary-search-axis__swatch--unchecked { background: rgba(var(--color-neutral-200), 1); }
+.binary-search-axis__swatch--fail { background: rgba(var(--color-primary-300), 1); }
