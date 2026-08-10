@@ -1,0 +1,66 @@
+.tree-diagram {
+  margin: 1.75rem 0;
+}
+
+.tree-diagram svg {
+  display: block;
+  width: 100%;
+  max-width: 37.5rem;
+  height: auto;
+  margin: 0 auto;
+  overflow: visible;
+}
+
+.tree-diagram__edge {
+  stroke: rgba(var(--color-neutral-400), 1);
+  stroke-width: 2;
+}
+
+.tree-diagram__node circle {
+  fill: rgba(var(--color-neutral-100), 1);
+  stroke: rgba(var(--color-neutral-600), 1);
+  stroke-width: 2;
+}
+
+.tree-diagram__node text {
+  fill: rgba(var(--color-neutral-800), 1);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 10px;
+  font-weight: 700;
+  text-anchor: middle;
+}
+
+.dark .tree-diagram__node text {
+  fill: rgba(var(--color-neutral-100), 1);
+}
+
+.dark .tree-diagram__node circle {
+  fill: rgba(var(--color-neutral-800), 1);
+  stroke: rgba(var(--color-neutral-300), 1);
+}
+
+.dark .tree-diagram__edge {
+  stroke: rgba(var(--color-neutral-500), 1);
+}
+
+.tree-diagram__node--highlighted circle {
+  fill: rgba(var(--color-secondary-200), 1);
+  stroke: rgba(var(--color-secondary-600), 1);
+}
+
+.dark .tree-diagram__node--highlighted circle {
+  fill: rgba(var(--color-secondary-800), 1);
+  stroke: rgba(var(--color-secondary-200), 1);
+}
+
+.tree-diagram figcaption {
+  margin-top: 0.25rem;
+  color: rgba(var(--color-neutral-600), 1);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.dark .tree-diagram figcaption {
+  color: rgba(var(--color-neutral-400), 1);
+}

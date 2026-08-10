@@ -1,0 +1,36 @@
+{{- $nodes := split (.Get "nodes") "," -}}
+{{- $highlights := split (.Get "highlight") "," -}}
+{{- $caption := .Get "caption" -}}
+{{- $id := printf "tree-diagram-%d" .Ordinal -}}
+{{- $x := slice 300 160 440 80 240 360 520 40 120 200 280 320 400 480 560 -}}
+{{- $y := slice 34 100 100 166 166 166 166 232 232 232 232 232 232 232 232 -}}
+
+{{- if gt (len $nodes) 15 -}}
+  {{- errorf "tree-diagram supports at most 15 level-order nodes: %s" .Position -}}
+{{- end -}}
+
+<figure class="tree-diagram not-prose" aria-labelledby="{{ $id }}-caption">
+  <svg viewBox="0 0 600 270" role="img" aria-labelledby="{{ $id }}-title {{ $id }}-description">
+    <title id="{{ $id }}-title">{{ $caption }}</title>
+    <desc id="{{ $id }}-description">A tree diagram. Nodes are supplied in level-order; a dash denotes an absent node.</desc>
+    {{- range $i, $node := $nodes }}
+      {{- if and (gt $i 0) (ne $node "-") -}}
+        {{- $parent := div (sub $i 1) 2 -}}
+        {{- $parentNode := index $nodes $parent -}}
+        {{- if ne $parentNode "-" }}
+          <line class="tree-diagram__edge" x1="{{ index $x $parent }}" y1="{{ add (index $y $parent) 20 }}" x2="{{ index $x $i }}" y2="{{ sub (index $y $i) 20 }}" />
+        {{- end -}}
+      {{- end -}}
+    {{- end }}
+    {{- range $i, $node := $nodes }}
+      {{- if ne $node "-" }}
+        {{- $highlighted := in $highlights (printf "%d" $i) -}}
+        <g class="tree-diagram__node{{ if $highlighted }} tree-diagram__node--highlighted{{ end }}">
+          <circle cx="{{ index $x $i }}" cy="{{ index $y $i }}" r="20" />
+          <text x="{{ index $x $i }}" y="{{ add (index $y $i) 5 }}">{{ $node }}</text>
+        </g>
+      {{- end -}}
+    {{- end }}
+  </svg>
+  <figcaption id="{{ $id }}-caption">{{ $caption }}</figcaption>
+</figure>

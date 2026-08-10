@@ -162,3 +162,33 @@ $$
 Thus, \( (-1,\ell] \) passes, \( (\ell,r) \) remains unchecked, and \( [r,n) \) fails. The closed endpoints in the checked regions are necessary: they record the outcomes at the current boundaries \( \ell \) and \( r \).
 
 The advantage of the open convention is that the *unchecked* region is always \( (\ell,r) \). After either update, it remains \( (\ell,r) \) with one boundary replaced, so no \( \ell + 1 \), \( r - 1 \), or endpoint-conversion bookkeeping is needed to describe the next search interval.
+
+## LeetCode example: Search Insert Position
+
+[LeetCode 35: Search Insert Position](https://leetcode.com/problems/search-insert-position/) asks for the index of `target` in a sorted array, or the index where it should be inserted to keep the array sorted. This is exactly the first index whose value is not less than `target`.
+
+Use the template with
+
+$$
+\operatorname{check}(i) \iff \texttt{nums[i] < target}.
+$$
+
+Then `L` finishes at the last index with a smaller value and `R` finishes at the first index with `nums[R] >= target`. The latter is the required answer, including when the target is absent.
+
+```python
+class Solution:
+    def searchInsert(self, nums: list[int], target: int) -> int:
+        L = -1
+        R = len(nums)
+
+        while R - L > 1:
+            m = (L + R) // 2
+            if nums[m] < target:
+                L = m
+            else:
+                R = m
+
+        return R
+```
+
+For `nums = [1, 3, 5, 6]`, the function returns `2` for `target = 5`, `1` for `target = 2`, and `4` for `target = 7`. The virtual failing boundary at `n` makes the final case work without a special branch. Each iteration halves the unchecked interval, so the time complexity is \(O(\log n)\) and the algorithm uses \(O(1)\) extra space.

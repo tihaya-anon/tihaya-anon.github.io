@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="Abstract geometric blog cover">
+  <g fill="none"><line x1="664.5" y1="525.1" x2="820.7" y2="525.1" transform="rotate(67.5 664.5 525.1)" stroke="#215b9a" stroke-width="16" stroke-linecap="round" opacity="0.50"/>
+  <line x1="721.4" y1="533.3" x2="835.1" y2="533.3" transform="rotate(67.5 721.4 533.3)" stroke="#ae2679" stroke-width="9" stroke-linecap="round" opacity="0.52"/>
+  <line x1="795.7" y1="123.0" x2="1027.6" y2="123.0" transform="rotate(67.5 795.7 123.0)" stroke="#215b9a" stroke-width="16" stroke-linecap="round" opacity="0.35"/>
+  <line x1="-67.6" y1="48.2" x2="123.1" y2="48.2" transform="rotate(112.5 -67.6 48.2)" stroke="#6bb8db" stroke-width="14" stroke-linecap="round" opacity="0.44"/>
+  <line x1="848.4" y1="413.4" x2="1183.0" y2="413.4" transform="rotate(112.5 848.4 413.4)" stroke="#215b9a" stroke-width="10" stroke-linecap="round" opacity="0.46"/>
+  <line x1="-28.3" y1="310.3" x2="135.9" y2="310.3" transform="rotate(67.5 -28.3 310.3)" stroke="#dd66ae" stroke-width="9" stroke-linecap="round" opacity="0.47"/>
+  <line x1="780.1" y1="91.6" x2="907.9" y2="91.6" transform="rotate(157.5 780.1 91.6)" stroke="#6bb8db" stroke-width="16" stroke-linecap="round" opacity="0.59"/>
+  <line x1="962.4" y1="553.6" x2="1164.9" y2="553.6" transform="rotate(22.5 962.4 553.6)" stroke="#215b9a" stroke-width="11" stroke-linecap="round" opacity="0.52"/></g>
+  <g transform="translate(830.6 192.5) scale(3.28)"><path
+    d="M 50 50 C 63 38.8, 63 21.3, 50 15 C 37 21.3, 37 38.8, 50 50 C 66.86 53.18, 80.54 42.27, 77.36 28.18 C 64.33 21.94, 50.65 32.85, 50 50 C 58.03 65.17, 75.09 69.06, 84.12 57.79 C 80.87 43.71, 63.81 39.82, 50 50 C 43.15 65.73, 50.74 81.5, 65.19 81.53 C 74.17 70.22, 66.57 54.45, 50 50 C 33.43 54.45, 25.83 70.22, 34.81 81.53 C 49.26 81.5, 56.85 65.73, 50 50 C 36.19 39.82, 19.13 43.71, 15.88 57.79 C 24.91 69.06, 41.97 65.17, 50 50 C 49.35 32.85, 35.67 21.94, 22.64 28.18 C 19.46 42.27, 33.14 53.18, 50 50"
+    fill="none"
+    stroke="#dd66ae"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  /></g>
+</svg>
