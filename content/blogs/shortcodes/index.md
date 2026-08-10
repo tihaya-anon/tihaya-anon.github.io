@@ -2,7 +2,7 @@
 title: "Shortcode Palette Preview"
 weight: 6
 date: 2026-08-09
-draft: false
+draft: true
 description: "A local preview page for checking Blowfish shortcodes against the custom palette."
 slug: "shortcodes"
 tags: ["shortcodes", "palette"]
