@@ -4,6 +4,7 @@ weight: 6
 date: 2026-08-10
 draft: false
 description: "A practical way to design, prove, and analyze recursive algorithms"
+summary: "A practical way to design, prove, and analyze recursive algorithms"
 tags: ["leetcode", "tech"]
 ---
 {{< katex >}}

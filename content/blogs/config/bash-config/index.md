@@ -4,6 +4,7 @@ weight: 6
 date: 2026-08-11
 draft: false
 description: "A portable Bash setup with a focused alias collection and a Starship prompt."
+summary: "A portable Bash setup with a focused alias collection and a Starship prompt."
 tags: ["bash", "shell", "terminal", "config"]
 ---
 

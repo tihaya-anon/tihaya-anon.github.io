@@ -4,9 +4,19 @@ weight: 6
 date: 2026-08-10
 draft: false
 description: "A binary search template & illustration"
+summary: "A binary search template & illustration"
 tags: ["leetcode", "tech"]
 ---
 {{< katex >}}
+
+> [!NOTE]- For those who come from Enumerate & Maintain
+> Binary search is an example of [enumerate and maintain]({{< ref "/blogs/leetcode/enumerate-and-maintain" >}}):
+>
+> - **Enumerate:** the remaining search interval.
+> - **Maintain:** the monotonic predicate at its boundaries.
+>
+> Enumerate & Maintain is just a way of thinking, this doc is independant and its ok to skip that
+
 ## Principle
 Binary search relies on a [monotonic](https://en.wikipedia.org/wiki/Monotonic_function) property. For a strictly increasing function \( f \),
 
