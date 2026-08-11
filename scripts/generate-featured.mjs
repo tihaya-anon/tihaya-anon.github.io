@@ -6,17 +6,19 @@ import { dirname, join, relative, resolve } from "node:path";
 const [pagePath, customSeed] = process.argv.slice(2);
 
 if (!pagePath) {
-  console.error("Usage: node scripts/generate-featured.mjs <page-bundle-directory> [seed]");
+  console.error("Usage: node scripts/generate-featured.mjs <content-bundle-directory> [seed]");
   process.exit(1);
 }
 
 const pageDirectory = resolve(pagePath);
-const indexPath = join(pageDirectory, "index.md");
+const indexPath = ["index.md", "_index.md"]
+  .map((fileName) => join(pageDirectory, fileName))
+  .find(existsSync);
 const outputPath = join(pageDirectory, "featured.svg");
 const rootDirectory = resolve(dirname(new URL(import.meta.url).pathname), "..");
 
-if (!existsSync(indexPath)) {
-  console.error(`Expected page content at ${indexPath}`);
+if (!indexPath) {
+  console.error(`Expected index.md or _index.md in ${pageDirectory}`);
   process.exit(1);
 }
 
