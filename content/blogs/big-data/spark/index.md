@@ -111,6 +111,28 @@ traffic, serialization, sorting, open files, and possible disk spill. The number
 rows alone does not predict that cost: wide records, skewed keys, and an excessive
 partition count can dominate it.
 
+For `groupBy("country")`, every scan task may contain several countries. The
+exchange routes each row to the stage-two partition responsible for its key:
+
+{{< mermaid >}}
+flowchart TB
+    subgraph Stage1[Stage 1: input partitions]
+        T0[Scan task 0]
+        T1[Scan task 1]
+        T2[Scan task 2]
+    end
+    T0 --> Exchange[Shuffle exchange by country]
+    T1 --> Exchange
+    T2 --> Exchange
+    Exchange --> U0[Stage 2 task: CA keys]
+    Exchange --> U1[Stage 2 task: CN keys]
+    Exchange --> U2[Stage 2 task: US keys]
+{{< /mermaid >}}
+
+The country labels simplify the example: a real hash partition normally owns many
+keys. The invariant is that all rows for one grouping key arrive at the same
+downstream partition.
+
 ### Plans and optimization
 
 DataFrame and SQL execution passes through several representations:
@@ -184,6 +206,49 @@ lazy, consumes executor storage, and can evict other blocks. Materialize it with
 action, measure reuse, and `unpersist()` it when its lifetime ends. Persisting every
 intermediate DataFrame usually increases memory pressure without avoiding useful
 work.
+
+### Operations playbook
+
+Diagnose a slow job from the stage containing the straggler tasks. Compare task
+duration, input rows, shuffle read bytes, spill, garbage collection, and locality:
+
+- **One or a few tasks run far longer with much larger shuffle input:** the stage
+  is skewed.
+- **All tasks spill heavily:** partitions are too large for the available executor
+  memory, or the operation materializes too much data.
+- **Many tiny tasks spend little time computing:** file and partition counts are
+  creating scheduling and open-cost overhead.
+- **The driver stalls before tasks start:** planning, file listing, or an oversized
+  query plan may be the bottleneck rather than executor capacity.
+
+#### Immediate mitigation
+
+For a skewed SQL join, confirm adaptive query execution and skew-join handling are
+active, then inspect the executed plan to see whether Spark split the skewed shuffle
+partition. Broadcast a genuinely small join side when executor memory and join type
+make that safe. Filter and project columns before the exchange whenever semantics
+allow it.
+
+If one hot key remains, separate it from the common path or salt the large side of
+the join and replicate the matching small-side row across the same salt buckets.
+For a skewed aggregation, aggregate by `(key, salt)` first and merge those partial
+aggregates by `key`. These changes add work and must preserve the operation's
+associative or join semantics.
+
+Adding executors helps only when Spark has runnable tasks. It cannot divide one
+already-running straggler unless the plan or adaptive execution splits that work.
+Avoid treating a larger cluster as the first response to one oversized partition.
+
+#### Durable correction
+
+Collect table and column statistics so the optimizer sees realistic cardinalities.
+Choose partition counts from measured post-shuffle sizes, compact tiny source files,
+and make key-frequency checks part of pipeline validation. Model placeholder and
+unknown keys explicitly instead of allowing one null-like value to dominate joins.
+
+Track stage p50 and p99 task duration, maximum-to-median partition size, shuffle
+spill, executor loss, input file counts, and output file sizes. A successful run is
+not sufficient if one task determines nearly all of its wall-clock time.
 
 ### A practical reasoning loop
 

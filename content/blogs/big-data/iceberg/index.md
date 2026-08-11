@@ -83,6 +83,22 @@ Hidden partitioning means users filter on business columns such as `event_time`,
 not a manually maintained `event_date` directory column. The engine projects that
 predicate onto the applicable partition transforms for pruning.
 
+One query can therefore plan across files written under different partition specs:
+
+{{< mermaid >}}
+flowchart TB
+    Query[Filter on event_time] --> Planner[Iceberg scan planner]
+    Planner --> Old["Old manifests: months(event_time)"]
+    Planner --> New["New manifests: days(event_time)"]
+    Old --> O1[(Historical data files)]
+    New --> N1[(New data files)]
+    Note[Partition evolution does not rewrite old files] -.-> Old
+{{< /mermaid >}}
+
+The planner projects the same row-level predicate onto each spec. Old and new
+layouts coexist while queries continue to filter on the logical `event_time`
+column.
+
 {{< mermaid >}}
 flowchart TD
     Catalog[Catalog: current metadata pointer] --> Meta[Table metadata]
@@ -176,7 +192,51 @@ These references extend file lifetime. A snapshot cannot be fully cleaned up whi
 an unexpired branch or tag still needs it, so retention policies must account for
 all references rather than only the main branch's current snapshot.
 
-### Table maintenance is part of operation
+### Operations playbook
+
+Separate planning, reading, and committing symptoms before adding compute:
+
+- **Planning is slow before scan tasks start:** the table may have too many
+  manifests, snapshots, or files to evaluate efficiently.
+- **Reads open many small files:** frequent writes are producing files below the
+  target size and amplifying object-store requests.
+- **Reads spend time applying many deletes:** merge-on-read changes have accumulated
+  delete files that need compaction.
+- **Writers repeatedly fail commits:** concurrent operations overlap or the catalog
+  and object store are responding slowly.
+- **Metadata and storage continually grow:** snapshot, branch, tag, or orphan-file
+  retention is keeping old files reachable.
+
+#### Immediate mitigation
+
+Rewrite small data files for the affected partitions rather than compacting the
+entire table without a filter. Rewrite manifests when planning metadata is the
+bottleneck, and compact delete files with their associated data when read
+amplification is urgent. Run these operations with bounded concurrency and monitor
+their own commits so maintenance does not overwhelm production writers.
+
+Retry a commit only after determining whether its result is known and whether the
+operation can safely rebase on the new snapshot. Blindly replaying an overwrite or
+row-level change can conflict with concurrent data modifications.
+
+Expire snapshots or remove orphan files only after validating branches, tags,
+long-running readers, in-flight writers, rollback policy, and the configured safety
+interval. These procedures reclaim storage; they are not reversible backups.
+
+#### Durable correction
+
+Set writer distribution and target file sizes from the table's arrival rate and
+query pattern. Streaming writers often need a recurring compaction service because
+latency-oriented commits naturally create smaller files. Align sort order and
+partition transforms with selective filters without creating tiny physical
+partitions.
+
+Define maintenance objectives such as maximum small-file count, delete-file ratio,
+manifest count, and snapshot age. Schedule compaction, manifest rewrites, snapshot
+expiration, and orphan cleanup from those signals. Stagger maintenance across
+tables and give every operation an owner, retry policy, and observable result.
+
+### Routine table maintenance
 
 Immutable files make commits reliable, but frequent writes can produce many small
 files and old snapshots retain files that are no longer current. Production tables

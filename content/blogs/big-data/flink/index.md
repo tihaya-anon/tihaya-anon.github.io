@@ -83,6 +83,30 @@ sharing, subtasks from different operators in the same job can share a slot when
 they belong to compatible slot-sharing groups. This makes it possible for one
 slot to hold a pipeline while reserving resources across parallel pipelines.
 
+With parallelism two and default slot sharing, two slots can each host one parallel
+slice of the pipeline:
+
+{{< mermaid >}}
+flowchart TB
+    subgraph TM[TaskManager]
+        subgraph Slot0[Slot 0]
+            A0[Source + parse task 0]
+            B0[Window + sink task 0]
+            A0 --> B0
+        end
+        subgraph Slot1[Slot 1]
+            A1[Source + parse task 1]
+            B1[Window + sink task 1]
+            A1 --> B1
+        end
+    end
+{{< /mermaid >}}
+
+Slot sharing does not merge the two parallel slices. Subtask index 0 and its
+downstream work share one slot; subtask index 1 uses another. This co-location
+avoids reserving a separate slot for every operator while preserving parallel
+pipelines across the available slots.
+
 Increasing operator parallelism creates more subtasks and potential throughput,
 but the cluster needs sufficient slots and the source and sink must support that
 parallelism. A Kafka source, for example, cannot extract useful partition-level
@@ -246,6 +270,54 @@ Barrier alignment can increase checkpoint duration under backpressure because a
 multi-input task may wait for barriers from slower inputs. Unaligned checkpoints
 can reduce this delay by including in-flight data, trading checkpoint size and
 recovery considerations for faster progress under sustained backpressure.
+
+### Operations playbook
+
+Use the Web UI at subtask granularity. Job-level averages hide the difference
+between insufficient capacity and key skew:
+
+- **All parallel sink subtasks are busy and upstream is backpressured:** the sink
+  or its external system is the throughput limit.
+- **One keyed subtask is busy while peers are idle:** one or a few keys own most
+  of the records or state.
+- **Checkpoint barriers take a long time to traverse the graph:** sustained
+  backpressure or uneven inputs are delaying alignment.
+- **Snapshot time is high without barrier delay:** state size, storage bandwidth,
+  or the state backend is the likely bottleneck.
+- **One input holds back watermarks:** inspect idle partitions, source lag, and
+  timestamp assignment before changing window logic.
+
+#### Immediate mitigation
+
+If work is balanced, add TaskManager capacity and increase the bottleneck operator's
+parallelism. Stateful rescaling should use a tested savepoint or supported checkpoint
+workflow, stable operator UIDs, and a parallelism compatible with the operator's
+maximum parallelism. More empty slots alone do not rescale a running operator.
+
+For a slow external sink, increase sink parallelism only if the destination accepts
+the concurrency. Otherwise batch requests, use bounded asynchronous I/O, or repair
+the downstream service. For barrier delay under sustained backpressure, unaligned
+checkpoints may improve checkpoint progress, but they do not fix a state-storage
+bottleneck.
+
+A single hot key still maps to one keyed-state subtask after rescaling. An emergency
+path can route known heavy keys to a separate job or temporarily reduce their input
+rate, but moving keyed state requires a controlled state migration and correctness
+plan.
+
+#### Durable correction
+
+Split high-volume logical keys into stable subkeys and combine their partial results
+in a second keyed stage. For example, aggregate `(customer_id, salt)` first, then
+aggregate the partial values by `customer_id`. This increases parallelism at the
+cost of another exchange and is valid only when the operation can be combined in
+that way.
+
+Keep remote calls asynchronous and bounded, set state retention from business
+semantics, and size checkpoint storage for both steady state and recovery bursts.
+Load-test with realistic key distributions, late events, and destination latency.
+Track `busy`, `idle`, and `backpressured` time per subtask together with state size,
+checkpoint alignment, snapshot duration, restart time, and watermark lag.
 
 ### A practical starting sequence
 

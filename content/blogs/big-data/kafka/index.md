@@ -90,18 +90,48 @@ A consumer group is identified by `group.id`. All members with the same group ID
 cooperate as one logical subscriber; a different group ID creates an independent
 subscriber that can independently read the same retained records.
 
-For a topic with six partitions, a group might be assigned like this:
+For a topic with three partitions and four consumers, the group might be assigned
+like this:
 
 | Group member | Assigned partitions |
 | --- | --- |
-| `consumer-a` | 0, 1 |
-| `consumer-b` | 2, 3 |
-| `consumer-c` | 4, 5 |
+| `consumer-a` | 0 |
+| `consumer-b` | 1 |
+| `consumer-c` | 2 |
+| `consumer-d` | None; the member is idle |
 
-If a fourth member joins, the group redistributes the six partitions. If one
-member fails, its partitions move to surviving members. If the group grows to
-seven members, at least one member remains idle because a partition cannot be
-split between two active members in the same group.
+{{< mermaid >}}
+flowchart TB
+    subgraph Topic[orders topic]
+        P0[Partition 0]
+        P1[Partition 1]
+        P2[Partition 2]
+        P0 ~~~ P1
+        P1 ~~~ P2
+    end
+    subgraph Group[fraud consumer group]
+        C0[consumer-a]
+        C1[consumer-b]
+        C2[consumer-c]
+        C3[consumer-d: idle]
+        C0 ~~~ C1
+        C1 ~~~ C2
+        C2 ~~~ C3
+    end
+    P0 -->|assigned| C0
+    P1 -->|assigned| C1
+    P2 -->|assigned| C2
+    Limit[No fourth partition exists] -. no assignment .-> C3
+{{< /mermaid >}}
+
+If one active member fails, its partition moves to a surviving member during a
+rebalance. Adding partitions can activate idle members; merely adding more consumers
+cannot increase this group's parallelism beyond the topic's partition count.
+
+> [!NOTE]
+> The extra consumer is **idle**, not resource-starved. It can still heartbeat and
+> participate in the group, but it receives no records until an assignment becomes
+> available.
 
 The group lifecycle has four important parts:
 
@@ -230,6 +260,69 @@ Compaction is useful for reconstructing the latest state of keyed entities, but 
 does not turn Kafka into a low-latency point-lookup database. Consumers still read
 the log to rebuild their local view, and duplicate or older values may remain until
 compaction runs.
+
+### Operations playbook
+
+Consumer lag is a symptom, not a diagnosis. Start with the group description and
+compare lag, input rate, and assignment per partition:
+
+- **All partitions accumulate lag:** the consumer group or its downstream system
+  is below the topic's total input rate.
+- **One partition accumulates most lag:** a hot key, uneven key distribution, or
+  one slow partition-specific code path is limiting that consumer.
+- **Consumers are idle while lag grows:** there are fewer partitions than consumers,
+  so adding more group members cannot create more parallel work.
+- **Assignments change repeatedly:** rebalance churn, missed polls, deployment
+  instability, or session failures are interrupting useful processing.
+
+#### Immediate mitigation
+
+For broad, evenly distributed lag, add consumers up to the partition count and
+scale the downstream dependency with them. Reduce per-record overhead, increase
+safe batch sizes, and verify that poll processing remains within its liveness
+limits. Keep enough retention to prevent the oldest unread offsets from expiring
+while the group catches up.
+
+For one hot partition, extra consumers do not help because only one member in the
+group can own that partition. Immediate options are narrower:
+
+1. Give the owning consumer more CPU or remove a partition-specific downstream
+   bottleneck.
+2. Temporarily reduce or rate-limit the producer traffic responsible for the hot
+   key when the product can tolerate it.
+3. Isolate expensive record types from the consumer's main path while preserving
+   their durable handoff and idempotency contract.
+4. If the current partitioning cannot recover, migrate to a new topic with more
+   partitions through controlled dual-write or replay, validate the new consumers,
+   and then cut traffic over.
+
+> [!WARNING]
+> A new topic does not receive an existing partition or inherit its offsets. It is
+> a data migration with a new ordering and offset domain. Increasing the partition
+> count of the existing topic also changes future key-to-partition mapping and can
+> break per-key ordering across the change. Neither action is a transparent rebalance.
+
+Broker replica reassignment solves disk, broker, or leader imbalance; it does not
+split one consumer partition into parallel units. Keep that operation separate from
+consumer-group scaling.
+
+#### Durable correction
+
+Choose a partition key with enough cardinality and a distribution that follows the
+workload rather than only the entity model. A known high-volume tenant may need a
+dedicated topic or a composite key instead of sharing one fixed tenant key forever.
+
+**Salting** appends a deterministic or random bucket to a hot key, for example
+`customer-42:0` through `customer-42:15`, so its records can occupy multiple
+partitions. Salting is safe only when the application can relax per-key ordering or
+restore the original semantics with a second aggregation stage. Consumers must
+remove the salt when building customer-level state, and retries must compute the
+same salt when deterministic routing is required.
+
+Validate a new strategy with production key-frequency samples, expected growth,
+and failure tests. Monitor per-partition bytes, records, lag, processing time, and
+group rebalances; a topic-wide average hides the hot partition that controls the
+recovery time.
 
 ### Start with these design decisions
 
