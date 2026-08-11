@@ -55,6 +55,18 @@ removing elements from `L`. For example, "no duplicate characters" is
 repairable: removing enough characters eventually removes the duplicate. Not
 every subarray condition has this property.
 
+The diagrams below use `s = "abcadbe"`. Before reading the templates, keep the
+basic motion in mind: `R` admits a new element, and `L` removes old elements
+only when the invariant or fixed width requires it.
+
+{{< sliding-window-strip
+  values="a,b,c,a,d,b,e"
+  states="window,window,window,outside,outside,outside,outside"
+  left="0"
+  right="2"
+  caption="A valid window before expansion: s[0:3] = abc contains no repeated character."
+>}}
+
 ## Templates
 
 ### Fixed-size window
@@ -76,6 +88,28 @@ for R, value in enumerate(seq):
     if R - L + 1 == k:
         record(L, R, state)
 ```
+
+For `seq = [2, -1, 3, 4, -2, 1, 5]` and `k = 3`, the first recorded
+window spans indices `0` through `2`.
+
+{{< sliding-window-strip
+  values="2,-1,3,4,-2,1,5"
+  states="window,window,window,outside,outside,outside,outside"
+  left="0"
+  right="2"
+  caption="Fixed width k = 3: the current state describes [2, -1, 3]."
+>}}
+
+After `R` admits `4`, the window is one element too wide. Removing `seq[L]`
+and incrementing `L` shifts both boundaries while preserving width `k`.
+
+{{< sliding-window-strip
+  values="2,-1,3,4,-2,1,5"
+  states="outside,window,window,window,outside,outside,outside"
+  left="1"
+  right="3"
+  caption="After one slide, the state describes [-1, 3, 4]; the width remains three."
+>}}
 
 ### Variable-size window
 
@@ -152,6 +186,29 @@ def length_of_longest_substring(s: str) -> int:
 
     return best
 ```
+
+For `s = "abcadbe"`, expanding the earlier window to index `3` introduces a
+second `a`. The range and frequency map have been updated, but the uniqueness
+invariant is temporarily false.
+
+{{< sliding-window-strip
+  values="a,b,c,a,d,b,e"
+  states="conflict,window,window,conflict,outside,outside,outside"
+  left="0"
+  right="3"
+  caption="Expansion admits a duplicate a: s[0:4] = abca is temporarily invalid."
+>}}
+
+The repair loop removes the leftmost `a` and increments `L`. The remaining
+window is valid again, so it can be recorded.
+
+{{< sliding-window-strip
+  values="a,b,c,a,d,b,e"
+  states="outside,window,window,window,outside,outside,outside"
+  left="1"
+  right="3"
+  caption="After shrinking once, s[1:4] = bca satisfies the invariant again."
+>}}
 
 When `char` creates a duplicate, the window becomes invalid. Moving `L`
 does not search for a different kind of object; it removes elements from the

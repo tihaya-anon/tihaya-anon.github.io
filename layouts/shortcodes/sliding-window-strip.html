@@ -1,0 +1,48 @@
+{{- $values := split (.Get "values") "," -}}
+{{- $states := split (.Get "states") "," -}}
+{{- $validStates := slice "window" "conflict" "outside" -}}
+{{- $positions := slice 56 136 216 296 376 456 536 -}}
+{{- $left := .Get "left" -}}
+{{- $right := .Get "right" -}}
+{{- $caption := .Get "caption" -}}
+{{- $id := printf "sliding-window-strip-%d" .Ordinal -}}
+
+{{- if ne (len $values) 7 -}}
+  {{- errorf "sliding-window-strip requires exactly 7 comma-separated values: %s" .Position -}}
+{{- end -}}
+{{- if ne (len $states) 7 -}}
+  {{- errorf "sliding-window-strip requires exactly 7 comma-separated states: %s" .Position -}}
+{{- end -}}
+{{- range $states -}}
+  {{- if not (in $validStates .) -}}
+    {{- errorf "sliding-window-strip received unknown state %q: %s" . $.Position -}}
+  {{- end -}}
+{{- end -}}
+
+<figure class="sliding-window-strip not-prose" aria-labelledby="{{ $id }}-caption">
+  <svg viewBox="0 0 592 140" role="img" aria-labelledby="{{ $id }}-title {{ $id }}-description">
+    <title id="{{ $id }}-title">{{ $caption }}</title>
+    <desc id="{{ $id }}-description">A sequence diagram showing the left and right boundaries of a sliding window. Highlighted cells are inside the window, and conflict cells violate its invariant.</desc>
+    {{- range $i := seq 0 6 }}
+      {{- $x := index $positions $i -}}
+      {{- $state := index $states $i -}}
+      <rect class="sliding-window-strip__cell sliding-window-strip__cell--{{ $state }}" x="{{ sub $x 27 }}" y="52" width="54" height="44" rx="4" />
+      <text class="sliding-window-strip__value" x="{{ $x }}" y="80">{{ index $values $i }}</text>
+      <text class="sliding-window-strip__index" x="{{ $x }}" y="119">{{ $i }}</text>
+    {{- end }}
+    {{- with $left }}
+      {{- $x := index $positions (int .) -}}
+      <line class="sliding-window-strip__marker sliding-window-strip__marker--left" x1="{{ $x }}" y1="25" x2="{{ $x }}" y2="46" />
+      <text class="sliding-window-strip__marker-label" x="{{ $x }}" y="18">L</text>
+    {{- end }}
+    {{- with $right }}
+      {{- $x := index $positions (int .) -}}
+      <line class="sliding-window-strip__marker sliding-window-strip__marker--right" x1="{{ $x }}" y1="25" x2="{{ $x }}" y2="46" />
+      <text class="sliding-window-strip__marker-label" x="{{ $x }}" y="18">R</text>
+    {{- end }}
+  </svg>
+  <figcaption id="{{ $id }}-caption">
+    {{ $caption }}
+    <span class="sliding-window-strip__legend" aria-hidden="true"><span class="sliding-window-strip__swatch sliding-window-strip__swatch--window"></span>window <span class="sliding-window-strip__swatch sliding-window-strip__swatch--conflict"></span>conflict <span class="sliding-window-strip__swatch sliding-window-strip__swatch--outside"></span>outside</span>
+  </figcaption>
+</figure>
