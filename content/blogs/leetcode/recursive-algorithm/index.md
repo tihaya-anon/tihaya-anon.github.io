@@ -9,6 +9,9 @@ tags: ["leetcode", "tech"]
 ---
 {{< katex >}}
 
+> [!NOTE]- For those who come from Enumerate & Maintain
+> Enumerate & Maintain is only a way to frame the problem. This article stands on its own, so feel free to skip this section.
+
 ## Principle
 
 A recursive algorithm solves a problem by reducing it to one or more smaller instances of the same problem. Its correctness follows the same structure as [mathematical induction](https://en.wikipedia.org/wiki/Mathematical_induction):

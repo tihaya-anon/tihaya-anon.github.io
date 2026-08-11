@@ -15,7 +15,7 @@ tags: ["leetcode", "tech"]
 > - **Enumerate:** the remaining search interval.
 > - **Maintain:** the monotonic predicate at its boundaries.
 >
-> Enumerate & Maintain is just a way of thinking, this doc is independant and its ok to skip that
+> Enumerate & Maintain is only a way to frame the problem. This article stands on its own, so feel free to skip this section.
 
 ## Principle
 Binary search relies on a [monotonic](https://en.wikipedia.org/wiki/Monotonic_function) property. For a strictly increasing function \( f \),
