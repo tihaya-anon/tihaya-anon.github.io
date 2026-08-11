@@ -24,7 +24,7 @@
 
 .tree-diagram__node text {
   fill: rgba(var(--color-neutral-800), 1);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-family: var(--font-mono);
   font-size: 10px;
   font-weight: 700;
   text-anchor: middle;

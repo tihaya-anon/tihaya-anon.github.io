@@ -163,7 +163,7 @@ Thus, \( (-1,\ell] \) passes, \( (\ell,r) \) remains unchecked, and \( [r,n) \) 
 
 The advantage of the open convention is that the *unchecked* region is always \( (\ell,r) \). After either update, it remains \( (\ell,r) \) with one boundary replaced, so no \( \ell + 1 \), \( r - 1 \), or endpoint-conversion bookkeeping is needed to describe the next search interval.
 
-## LeetCode example: Search Insert Position
+## Example: Search Insert Position
 
 [LeetCode 35: Search Insert Position](https://leetcode.com/problems/search-insert-position/) asks for the index of `target` in a sorted array, or the index where it should be inserted to keep the array sorted. This is exactly the first index whose value is not less than `target`.
 

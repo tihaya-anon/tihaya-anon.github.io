@@ -38,7 +38,7 @@
 .binary-search-axis__index,
 .binary-search-axis__marker-label {
   fill: currentColor;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-family: var(--font-mono);
   font-size: 14px;
   text-anchor: middle;
 }

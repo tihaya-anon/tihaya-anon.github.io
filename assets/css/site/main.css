@@ -1,2 +1,13 @@
 @import "components/binary-search-axis.css";
 @import "components/tree-diagram.css";
+
+@font-face {
+  font-family: "Maple Mono NF CN";
+  src: url("/fonts/MapleMono-NF-CN-Regular.ttf") format("truetype");
+  font-display: swap;
+}
+
+:root {
+  --font-mono: "Maple Mono NF CN", ui-monospace, SFMono-Regular, Menlo, Monaco,
+    Consolas, "Liberation Mono", "Courier New", monospace;
+}
