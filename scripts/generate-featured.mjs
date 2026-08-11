@@ -60,10 +60,20 @@ if (!logoPath) throw new Error("Could not extract the logo path");
 
 const seed = customSeed ?? relative(rootDirectory, pageDirectory);
 const random = randomGenerator(hash(seed));
+const canvasWidth = 1200;
+const canvasHeight = 630;
+const logoSize = 100;
+const logoCenter = 50;
+const minimumVisibleArea = 0.6;
 const flowerColor = colors[Math.floor(random() * colors.length)];
-const flowerX = 720 + random() * 250;
-const flowerY = 155 + random() * 260;
-const flowerScale = 2.5 + random() * 1.3;
+const flowerXRatio = random();
+const flowerYRatio = random();
+const flowerScale = Number((2.5 + random() * 1.3).toFixed(2));
+const flowerRotation = random() * 360;
+const minimumVisiblePerAxis = Math.sqrt(minimumVisibleArea);
+const flowerInset = Math.ceil(logoSize * flowerScale * (minimumVisiblePerAxis - 0.5) * 10) / 10;
+const flowerX = flowerInset + flowerXRatio * (canvasWidth - flowerInset * 2);
+const flowerY = flowerInset + flowerYRatio * (canvasHeight - flowerInset * 2);
 const petals = logoPath.replace("currentColor", flowerColor);
 const lines = Array.from({ length: 5 + Math.floor(random() * 4) }, () => {
   const x = -80 + random() * 1280;
@@ -76,9 +86,9 @@ const lines = Array.from({ length: 5 + Math.floor(random() * 4) }, () => {
   return `<line x1="${x.toFixed(1)}" y1="${y.toFixed(1)}" x2="${(x + length).toFixed(1)}" y2="${y.toFixed(1)}" transform="rotate(${angle} ${x.toFixed(1)} ${y.toFixed(1)})" stroke="${color}" stroke-width="${width}" stroke-linecap="round" opacity="${opacity}"/>`;
 }).join("\n  ");
 
-const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="Abstract geometric blog cover">
+const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${canvasWidth}" height="${canvasHeight}" viewBox="0 0 ${canvasWidth} ${canvasHeight}" role="img" aria-label="Abstract geometric blog cover">
   <g fill="none">${lines}</g>
-  <g transform="translate(${flowerX.toFixed(1)} ${flowerY.toFixed(1)}) scale(${flowerScale.toFixed(2)})">${petals}</g>
+  <g transform="translate(${flowerX.toFixed(1)} ${flowerY.toFixed(1)}) rotate(${flowerRotation.toFixed(1)}) scale(${flowerScale.toFixed(2)}) translate(-${logoCenter} -${logoCenter})">${petals}</g>
 </svg>`;
 
 writeFileSync(outputPath, svg);
