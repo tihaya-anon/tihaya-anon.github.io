@@ -12,3 +12,29 @@
   --font-mono: "Maple Mono NF CN", ui-monospace, SFMono-Regular, Menlo, Monaco,
     Consolas, "Liberation Mono", "Courier New", monospace;
 }
+
+.highlight-wrapper pre {
+  overflow-x: hidden;
+}
+
+.highlight-wrapper code,
+.highlight-wrapper .chroma:not(:is(table *)) > code {
+  min-width: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+
+.highlight-wrapper .chroma .line {
+  min-width: 0;
+}
+
+.highlight-wrapper .chroma .ln {
+  flex: 0 0 auto;
+}
+
+.highlight-wrapper .chroma .cl {
+  min-width: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}

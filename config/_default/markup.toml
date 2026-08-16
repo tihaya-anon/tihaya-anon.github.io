@@ -20,6 +20,9 @@
 
 [highlight]
   noClasses = false
+  lineNos = true
+  lineNumbersInTable = false
+  wrapLongLines = true
 
 [tableOfContents]
   startLevel = 2
