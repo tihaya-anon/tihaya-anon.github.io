@@ -10,7 +10,8 @@ tags: ["bash", "shell", "terminal", "config"]
 
 This is the Bash setup I use day to day, rather than a raw backup. It keeps
 shell startup responsibilities in `.bashrc`, short command definitions in
-`.bash_aliases`, and prompt presentation in Starship.
+`.bash_aliases`, machine-local environment in small private files, and prompt
+presentation in Starship.
 
 The files load in this order:
 
@@ -18,11 +19,14 @@ The files load in this order:
    and completion, then loads optional tools when they are installed.
 2. `.bash_aliases` adds command shortcuts once. It is sourced after the base
    `ls` and grep aliases, so there are no competing definitions.
-3. Starship replaces the default Bash prompt when `starship` is available.
+3. `.bash_env` and `.mirrors` provide private exports and host-specific mirror
+   settings without putting secrets in the public config.
+4. Starship replaces the default Bash prompt when `starship` is available.
 
 The configuration targets Debian or Ubuntu, but missing optional tools such as
-`ble.sh`, Homebrew, NVM, SDKMAN, and Starship are safely skipped. Copy the
-sections you need, and adjust the `HOME`-relative paths for your installation.
+`ble.sh`, Homebrew, NVM, SDKMAN, Cargo, Zoxide, and Starship are safely skipped.
+Copy the sections you need, and adjust the `HOME`-relative paths for your
+installation.
 
 ## Private environment variables
 
@@ -35,6 +39,8 @@ committed or pasted into a public post. Restricting it with `chmod 600
 
 ## `.bashrc`
 ```sh
+# ~/.bashrc: executed by bash(1) for non-login shells.
+
 # Only configure interactive shells.
 case $- in
     *i*) ;;
@@ -47,6 +53,22 @@ shopt -s histappend
 HISTSIZE=1000
 HISTFILESIZE=2000
 shopt -s checkwinsize
+
+path_prepend() {
+    [ -d "$1" ] || return
+    case ":$PATH:" in
+        *":$1:"*) ;;
+        *) PATH="$1:$PATH" ;;
+    esac
+}
+
+path_append() {
+    [ -d "$1" ] || return
+    case ":$PATH:" in
+        *":$1:"*) ;;
+        *) PATH="$PATH:$1" ;;
+    esac
+}
 
 # Make `less` more useful for non-text files when lesspipe is installed.
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
@@ -105,6 +127,10 @@ if [ -f ~/.bash_aliases ]; then
     . ~/.bash_aliases
 fi
 
+# Private machine-local exports and mirror settings.
+[ -r "$HOME/.bash_env" ] && source "$HOME/.bash_env"
+[ -r "$HOME/.mirrors" ] && source "$HOME/.mirrors"
+
 # Programmable completion, if the distribution has installed it.
 if ! shopt -oq posix; then
     if [ -f /usr/share/bash-completion/bash_completion ]; then
@@ -117,7 +143,15 @@ fi
 # Optional tools. Their guards keep shell startup quiet on a new machine.
 [ -r "$HOME/.local/share/blesh/ble.sh" ] && source "$HOME/.local/share/blesh/ble.sh"
 [ -r "$HOME/.local/bin/env" ] && source "$HOME/.local/bin/env"
-[ -r "$HOME/.bash_env" ] && source "$HOME/.bash_env"
+
+export UV_CACHE_DIR="${UV_CACHE_DIR:-/tmp/.cache/uv}"
+
+path_prepend "$HOME/.local/bin"
+path_append "/opt/nvim-linux-x86_64/bin"
+path_prepend "$HOME/.terragrunt/bin"
+path_append "$HOME/.pulumi/bin"
+
+[ -r "$HOME/.cargo/env" ] && source "$HOME/.cargo/env"
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
@@ -126,18 +160,19 @@ export NVM_DIR="$HOME/.nvm"
 export SDKMAN_DIR="$HOME/.sdkman"
 [ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ] && source "$SDKMAN_DIR/bin/sdkman-init.sh"
 
-# Tool-specific binary directories, added only when they exist.
-[ -d "$HOME/.terragrunt/bin" ] && export PATH="$HOME/.terragrunt/bin:$PATH"
-[ -d "$HOME/.pulumi/bin" ] && export PATH="$PATH:$HOME/.pulumi/bin"
-
 # Homebrew adjusts PATH and related variables.
 if [ -x /home/linuxbrew/.linuxbrew/bin/brew ]; then
     eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv bash)"
 fi
 export HOMEBREW_NO_ENV_HINTS=1
 
+# Zoxide replaces repeated `cd` navigation, when installed.
+command -v zoxide >/dev/null 2>&1 && eval "$(zoxide init bash)"
+
 # Starship owns the final prompt, when installed.
 command -v starship >/dev/null 2>&1 && eval "$(starship init bash)"
+
+unset -f path_prepend path_append
 ```
 
 ## `.bash_aliases`
