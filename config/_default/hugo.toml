@@ -3,6 +3,8 @@
 # https://blowfish.page/docs/getting-started/
 
 theme = "blowfish" # UNCOMMENT THIS LINE
+enableGitInfo = true
+timeZone = "Asia/Shanghai"
 # baseURL = "https://your_domain.com/"
 defaultContentLanguage = "en"
 
