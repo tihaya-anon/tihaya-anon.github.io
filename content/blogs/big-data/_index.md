@@ -1,5 +1,6 @@
 ---
 title: "Big Data"
+date: 2026-08-11
 description: "Practical introductions to the systems behind event streams, distributed processing, and analytical tables."
 orderByWeight: true
 ---

@@ -1,5 +1,6 @@
 ---
 title: "Cloud Native"
+date: 2026-08-18
 description: "Practical introductions to containers, orchestration, and the systems used to build and operate cloud-native applications."
 orderByWeight: true
 ---

@@ -1,5 +1,6 @@
 ---
 title: "LeetCode"
+date: 2026-08-11
 description: "Algorithm patterns, invariants, and reusable approaches for solving LeetCode problems."
 ---
 
