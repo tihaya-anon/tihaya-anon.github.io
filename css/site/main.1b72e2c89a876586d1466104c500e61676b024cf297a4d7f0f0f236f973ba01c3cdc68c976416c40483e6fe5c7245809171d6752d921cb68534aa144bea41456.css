@@ -1,0 +1,292 @@
+/* ns-hugo-imp:/home/runner/work/tihaya-anon.github.io/tihaya-anon.github.io/assets/css/site/components/binary-search-axis.css */
+.binary-search-axis {
+  margin: 1.75rem 0;
+}
+.binary-search-axis svg {
+  display: block;
+  width: 100%;
+  max-width: 37rem;
+  height: auto;
+  margin: 0 auto;
+  overflow: visible;
+}
+.binary-search-axis__line {
+  stroke: rgba(var(--color-neutral-500), 1);
+  stroke-width: 2;
+}
+.binary-search-axis__point {
+  stroke-width: 2;
+}
+.binary-search-axis__point--pass {
+  fill: rgba(var(--color-secondary-200), 1);
+  stroke: rgba(var(--color-secondary-600), 1);
+}
+.binary-search-axis__point--unchecked {
+  fill: rgba(var(--color-neutral-100), 1);
+  stroke: rgba(var(--color-neutral-500), 1);
+}
+.binary-search-axis__point--fail {
+  fill: rgba(var(--color-primary-200), 1);
+  stroke: rgba(var(--color-primary-600), 1);
+}
+.binary-search-axis__index,
+.binary-search-axis__marker-label {
+  fill: currentColor;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  text-anchor: middle;
+}
+.binary-search-axis__marker-label {
+  font-weight: 700;
+}
+.binary-search-axis__marker {
+  stroke-width: 2;
+}
+.binary-search-axis__marker--left {
+  stroke: rgba(var(--color-secondary-600), 1);
+}
+.binary-search-axis__marker--middle {
+  stroke: rgba(var(--color-neutral-700), 1);
+}
+.binary-search-axis__marker--right {
+  stroke: rgba(var(--color-primary-600), 1);
+}
+.binary-search-axis figcaption {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  justify-content: center;
+  margin-top: 0.25rem;
+  color: rgba(var(--color-neutral-600), 1);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  text-align: center;
+}
+.dark .binary-search-axis figcaption {
+  color: rgba(var(--color-neutral-400), 1);
+}
+.binary-search-axis__legend {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+}
+.binary-search-axis__swatch {
+  width: 0.65rem;
+  height: 0.65rem;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+}
+.binary-search-axis__swatch--pass {
+  background: rgba(var(--color-secondary-300), 1);
+}
+.binary-search-axis__swatch--unchecked {
+  background: rgba(var(--color-neutral-200), 1);
+}
+.binary-search-axis__swatch--fail {
+  background: rgba(var(--color-primary-300), 1);
+}
+
+/* ns-hugo-imp:/home/runner/work/tihaya-anon.github.io/tihaya-anon.github.io/assets/css/site/components/sliding-window-strip.css */
+.sliding-window-strip {
+  margin: 1.75rem 0;
+}
+.sliding-window-strip svg {
+  display: block;
+  width: 100%;
+  max-width: 37rem;
+  height: auto;
+  margin: 0 auto;
+  overflow: visible;
+}
+.sliding-window-strip__cell {
+  stroke-width: 2;
+}
+.sliding-window-strip__cell--window {
+  fill: rgba(var(--color-secondary-200), 1);
+  stroke: rgba(var(--color-secondary-600), 1);
+}
+.sliding-window-strip__cell--conflict {
+  fill: rgba(var(--color-primary-200), 1);
+  stroke: rgba(var(--color-primary-600), 1);
+}
+.sliding-window-strip__cell--outside {
+  fill: rgba(var(--color-neutral-100), 1);
+  stroke: rgba(var(--color-neutral-400), 1);
+}
+.sliding-window-strip__value,
+.sliding-window-strip__index,
+.sliding-window-strip__marker-label {
+  fill: rgba(var(--color-neutral-800), 1);
+  font-family: var(--font-mono);
+  text-anchor: middle;
+}
+.sliding-window-strip__value {
+  font-size: 16px;
+  font-weight: 700;
+}
+.sliding-window-strip__index {
+  font-size: 12px;
+}
+.sliding-window-strip__marker-label {
+  font-size: 14px;
+  font-weight: 700;
+}
+.sliding-window-strip__marker {
+  stroke-width: 2;
+}
+.sliding-window-strip__marker--left {
+  stroke: rgba(var(--color-secondary-600), 1);
+}
+.sliding-window-strip__marker--right {
+  stroke: rgba(var(--color-primary-600), 1);
+}
+.dark .sliding-window-strip__value,
+.dark .sliding-window-strip__index,
+.dark .sliding-window-strip__marker-label {
+  fill: rgba(var(--color-neutral-100), 1);
+}
+.dark .sliding-window-strip__cell--outside {
+  fill: rgba(var(--color-neutral-800), 1);
+  stroke: rgba(var(--color-neutral-500), 1);
+}
+.dark .sliding-window-strip__cell--window {
+  fill: rgba(var(--color-secondary-800), 1);
+  stroke: rgba(var(--color-secondary-300), 1);
+}
+.dark .sliding-window-strip__cell--conflict {
+  fill: rgba(var(--color-primary-800), 1);
+  stroke: rgba(var(--color-primary-300), 1);
+}
+.sliding-window-strip figcaption {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  justify-content: center;
+  margin-top: 0.25rem;
+  color: rgba(var(--color-neutral-600), 1);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  text-align: center;
+}
+.dark .sliding-window-strip figcaption {
+  color: rgba(var(--color-neutral-400), 1);
+}
+.sliding-window-strip__legend {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+}
+.sliding-window-strip__swatch {
+  width: 0.65rem;
+  height: 0.65rem;
+  border: 1px solid currentColor;
+  border-radius: 2px;
+}
+.sliding-window-strip__swatch--window {
+  background: rgba(var(--color-secondary-300), 1);
+}
+.sliding-window-strip__swatch--conflict {
+  background: rgba(var(--color-primary-300), 1);
+}
+.sliding-window-strip__swatch--outside {
+  background: rgba(var(--color-neutral-200), 1);
+}
+
+/* ns-hugo-imp:/home/runner/work/tihaya-anon.github.io/tihaya-anon.github.io/assets/css/site/components/tree-diagram.css */
+.tree-diagram {
+  margin: 1.75rem 0;
+}
+.tree-diagram svg {
+  display: block;
+  width: 100%;
+  max-width: 37.5rem;
+  height: auto;
+  margin: 0 auto;
+  overflow: visible;
+}
+.tree-diagram__edge {
+  stroke: rgba(var(--color-neutral-400), 1);
+  stroke-width: 2;
+}
+.tree-diagram__node circle {
+  fill: rgba(var(--color-neutral-100), 1);
+  stroke: rgba(var(--color-neutral-600), 1);
+  stroke-width: 2;
+}
+.tree-diagram__node text {
+  fill: rgba(var(--color-neutral-800), 1);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  text-anchor: middle;
+}
+.dark .tree-diagram__node text {
+  fill: rgba(var(--color-neutral-100), 1);
+}
+.dark .tree-diagram__node circle {
+  fill: rgba(var(--color-neutral-800), 1);
+  stroke: rgba(var(--color-neutral-300), 1);
+}
+.dark .tree-diagram__edge {
+  stroke: rgba(var(--color-neutral-500), 1);
+}
+.tree-diagram__node--highlighted circle {
+  fill: rgba(var(--color-secondary-200), 1);
+  stroke: rgba(var(--color-secondary-600), 1);
+}
+.dark .tree-diagram__node--highlighted circle {
+  fill: rgba(var(--color-secondary-800), 1);
+  stroke: rgba(var(--color-secondary-200), 1);
+}
+.tree-diagram figcaption {
+  margin-top: 0.25rem;
+  color: rgba(var(--color-neutral-600), 1);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  text-align: center;
+}
+.dark .tree-diagram figcaption {
+  color: rgba(var(--color-neutral-400), 1);
+}
+
+/* <stdin> */
+@font-face {
+  font-family: "Maple Mono NF CN";
+  src: url("/css/site/MapleMono-NF-CN-Regular-6FCRXOLZ.ttf") format("truetype");
+  font-display: swap;
+}
+:root {
+  --font-mono:
+    "Maple Mono NF CN",
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    Monaco,
+    Consolas,
+    "Liberation Mono",
+    "Courier New",
+    monospace;
+}
+.highlight-wrapper pre {
+  overflow-x: hidden;
+}
+.highlight-wrapper code,
+.highlight-wrapper .chroma:not(:is(table *)) > code {
+  min-width: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+.highlight-wrapper .chroma .line {
+  min-width: 0;
+}
+.highlight-wrapper .chroma .ln {
+  flex: 0 0 auto;
+}
+.highlight-wrapper .chroma .cl {
+  min-width: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
