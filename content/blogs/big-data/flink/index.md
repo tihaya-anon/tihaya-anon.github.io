@@ -12,30 +12,28 @@ Apache Flink is a distributed engine for stateful computations over data streams
 It treats incoming events as an unbounded dataset and updates results as those
 events arrive.
 
-This introduction explains **why** continuous processing needs a specialized
-model, **what** Flink contributes, and **how** time, state, and recovery work
-together in a running job.
+This introduction explains **why** Flink uses a stream-first execution model,
+**what** that model provides, and **how** time, state, and recovery work together
+in a running job.
 
 ## Why Flink?
 
-Many questions lose value when answered tomorrow:
+Early distributed data engines were primarily batch systems. They processed a
+bounded input, produced an output, and stopped. Some streaming layers reused that
+model by running many small batches, while other systems processed records
+continuously but left durable state and recovery to the application.
 
-- Is this payment likely to be fraudulent?
-- How many active sessions are on the site now?
-- Has a device stopped reporting?
-- Which account crossed a risk threshold in the last ten minutes?
+Flink was designed around a different premise: a stream is the primary execution
+model, and a bounded dataset is a stream that eventually ends. Long-running
+operators can keep managed state, reason about event time with watermarks, and
+take distributed snapshots while records continue to flow. Recovery restores the
+operator state and source positions to one consistent point.
 
-A repeated batch job can approximate these answers, but each run rescans data
-and introduces delay. A stream processor instead keeps the relevant computation
-alive and updates it incrementally.
-
-Continuous processing introduces harder correctness problems. Events can arrive
-late or out of order. A keyed calculation must remember earlier events. Workers
-fail while local state is changing. The system must recover without silently
-losing data or applying the same effect twice.
-
-Flink is designed around those problems rather than treating them as additions
-to a batch-only execution model.
+Choose Flink when a computation needs true record-at-a-time processing together
+with event-time correctness, substantial keyed state, and coordinated fault
+tolerance. Its reason for existing is not merely that some results are needed
+quickly; it is that these guarantees are difficult to add cleanly to a batch-first
+engine or implement separately in every streaming application.
 
 ## What is Flink?
 

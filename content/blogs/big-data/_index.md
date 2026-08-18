@@ -4,4 +4,5 @@ description: "Practical introductions to the systems behind event streams, distr
 ---
 
 Introductions to the building blocks of a modern data platform, organized around
-why each tool exists, what it provides, and how it works.
+the technical limitations each tool was designed to address, what it provides,
+and how it works.

@@ -12,27 +12,29 @@ Apache Spark is a distributed computation engine. It lets one program transform
 data that is too large, too slow, or too operationally expensive to process on a
 single machine.
 
-This introduction follows one question through three layers: **why** a distributed
-engine is useful, **what** Spark actually provides, and **how** a Spark application
-turns code into work across a cluster.
+This introduction follows one question through three layers: **why** Spark uses a
+general DAG execution engine, **what** that engine provides, and **how** a Spark
+application turns code into work across a cluster.
 
 ## Why Spark?
 
-A single process eventually meets one of three limits:
+MapReduce established a reliable way to process large datasets across unreliable
+machines, but its execution model is rigid: each job has map and reduce phases,
+and multi-step or iterative algorithms pass intermediate results through durable
+storage between jobs. Higher-level analytics therefore require chains of jobs
+with repeated scheduling, serialization, and I/O.
 
-- The data no longer fits in memory or on one disk.
-- The computation takes longer than the business can wait.
-- One machine becomes a fragile bottleneck for a recurring production job.
+Spark was created as a general DAG engine with reusable distributed datasets.
+It can express several stages in one execution plan, pipeline compatible
+operations, keep reused data in memory, and recover lost partitions from lineage.
+Later structured APIs added relational planning and optimization without changing
+the underlying distributed execution model.
 
-Splitting a file across machines is easy. Coordinating the computation is not.
-Workers fail, records must move between machines, tasks need scheduling, and
-intermediate results must be recovered without rerunning everything by hand.
-Spark packages those concerns behind a high-level API.
-
-Spark is a good fit for large-scale batch transformations, SQL analytics,
-feature engineering, and iterative data processing. It also supports streaming,
-but its broad strength is a unified engine and API across several analytical
-workloads.
+Choose Spark when a workload benefits from a general-purpose distributed engine:
+large batch transformations, SQL analytics, feature engineering, or iterative
+processing that would be awkward as independent MapReduce jobs. Streaming is
+available, but Spark's defining advantage is the unified DAG engine across
+analytical workloads.
 
 > [!NOTE]
 > Spark does not make every job faster. Small data often runs more efficiently in

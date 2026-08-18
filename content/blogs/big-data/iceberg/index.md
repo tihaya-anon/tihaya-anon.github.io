@@ -12,27 +12,29 @@ Apache Iceberg is an open table format for large analytical datasets. It adds a
 reliable table abstraction over data files in object storage or distributed file
 systems, allowing multiple engines to read and write the same tables safely.
 
-This introduction explains **why** a directory of Parquet files is not enough,
-**what** Iceberg stores beyond the data itself, and **how** metadata and snapshots
-turn file changes into atomic table commits.
+This introduction explains **why** Iceberg replaces path-based table state with
+explicit metadata, **what** that metadata provides, and **how** snapshots turn
+file changes into atomic table commits.
 
 ## Why Iceberg?
 
-Columnar files such as Parquet efficiently store analytical data, but a collection
-of files does not by itself provide table semantics.
+Hive-style tables derive much of their state from directory paths: partitions are
+encoded in folder names, and query planning discovers data by listing those
+folders or consulting a metastore that mirrors them. This couples the logical
+table to its physical layout. On large object-store tables, file discovery is
+expensive, renames are not atomic, concurrent changes are difficult to isolate,
+and schema or partition evolution can require rewriting data or application logic.
 
-At scale, directory-based tables develop difficult edge cases:
+Iceberg was designed to make table state explicit. Immutable metadata files track
+the schema, partition specifications, snapshots, and exact data-file membership.
+A writer prepares new files and metadata, then commits by atomically replacing one
+catalog pointer. Readers plan from a selected snapshot instead of inferring the
+table from a mutable directory tree.
 
-- A reader may observe half of a multi-file overwrite.
-- Listing millions of files is slow and can be inconsistent on some stores.
-- Renaming a partition column can imply rewriting directory layouts.
-- Changing partition strategy can break queries or force a full rewrite.
-- Tracking exactly which files belong to a table version becomes application logic.
-
-Iceberg moves table state into explicit metadata. Readers use a committed snapshot
-rather than guessing table contents from paths. Writers create new files and then
-atomically publish a new metadata pointer, so readers see either the old snapshot
-or the new one.
+Choose Iceberg when multiple engines need reliable SQL-table semantics over large
+file-based datasets: atomic commits, consistent reads, time travel, and safe schema
+or partition evolution. Parquet still stores the rows; Iceberg exists to provide
+the table-level metadata and transaction boundary that a file format does not.
 
 ## What is Iceberg?
 

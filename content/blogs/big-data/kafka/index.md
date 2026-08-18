@@ -11,30 +11,29 @@ tags: ["kafka", "big-data", "event-streaming", "data-engineering", "tech"]
 Apache Kafka is a distributed event log. Producers append records to named
 topics, Kafka retains those records, and consumers read them at their own pace.
 
-This introduction follows the system from **why** teams need a durable boundary
-between services, through **what** Kafka's log abstraction provides, to **how**
-partitioning, offsets, and consumer groups work in practice.
+This introduction follows the system from **why** Kafka uses a distributed log,
+through **what** that abstraction provides, to **how** partitioning, offsets, and
+consumer groups work in practice.
 
 ## Why Kafka?
 
-Direct service-to-service integration begins simply: an order service calls a
-billing service, an inventory service, an email service, and an analytics API.
-As consumers multiply, the producer accumulates dependencies. A slow consumer
-can slow the request, a failed consumer can lose an update, and adding a new use
-case requires changing the producer again.
+Traditional message brokers commonly center the queue: they track delivery to a
+consumer and remove or expire messages after consumption. That model works well
+for transferring units of work, but it is a poor foundation when the same ordered
+data must be retained, replayed, and read independently by many consumers at high
+throughput.
 
-Kafka inserts a durable event boundary:
+Kafka was designed around a partitioned, append-only log instead. Brokers retain
+records independently of consumer progress; each consumer group tracks its own
+offset. Sequential disk access and partitioning make the log scalable, while
+replication makes it durable. Producers and consumers agree on a stable record
+history rather than coordinating individual message handoffs.
 
-- Producers publish without knowing every consumer.
-- Consumers process independently and can replay retained history.
-- Traffic spikes are buffered instead of immediately overwhelming downstream
-  systems.
-- The event stream becomes a shared record of facts for real-time and batch use.
-
-Kafka is useful when events must be distributed reliably to multiple independent
-systems. It is not automatically the right choice for synchronous request-response
-calls, arbitrary record updates, or queues that require a global per-message
-priority.
+Choose Kafka when the durable, replayable log is the required abstraction: many
+independent consumers need the same event history, ordering is needed per key,
+or producers and consumers must scale separately. A conventional queue remains
+simpler when each message should be handled once by one worker, especially when
+global priority or per-message routing is central.
 
 ## What is Kafka?
 
