@@ -16,6 +16,9 @@ This introduction explains **why** Iceberg replaces path-based table state with
 explicit metadata, **what** that metadata provides, and **how** snapshots turn
 file changes into atomic table commits.
 
+For manifests, scan planning, optimistic commits, and delete mechanics, continue
+with [Iceberg Deep Dive: Metadata and Commits]({{< ref "/blogs/big-data/iceberg/deep-dive" >}}).
+
 ## Why Iceberg?
 
 Hive-style tables derive much of their state from directory paths: partitions are

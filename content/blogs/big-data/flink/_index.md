@@ -16,6 +16,9 @@ This introduction explains **why** Flink uses a stream-first execution model,
 **what** that model provides, and **how** time, state, and recovery work together
 in a running job.
 
+For state layout, checkpoint barriers, and recovery internals, continue with
+[Flink Deep Dive: State and Checkpoints]({{< ref "/blogs/big-data/flink/deep-dive" >}}).
+
 ## Why Flink?
 
 Early distributed data engines were primarily batch systems. They processed a

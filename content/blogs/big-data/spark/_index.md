@@ -16,6 +16,9 @@ This introduction follows one question through three layers: **why** Spark uses 
 general DAG execution engine, **what** that engine provides, and **how** a Spark
 application turns code into work across a cluster.
 
+For scheduler, shuffle, and recovery internals, continue with
+[Spark Deep Dive: Execution and Shuffle]({{< ref "/blogs/big-data/spark/deep-dive" >}}).
+
 ## Why Spark?
 
 MapReduce established a reliable way to process large datasets across unreliable

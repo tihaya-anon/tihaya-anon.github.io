@@ -15,6 +15,9 @@ This introduction follows the system from **why** Kafka uses a distributed log,
 through **what** that abstraction provides, to **how** partitioning, offsets, and
 consumer groups work in practice.
 
+For log segments, replication, and group coordination internals, continue with
+[Kafka Deep Dive: Logs and Replication]({{< ref "/blogs/big-data/kafka/deep-dive" >}}).
+
 ## Why Kafka?
 
 Traditional message brokers commonly center the queue: they track delivery to a

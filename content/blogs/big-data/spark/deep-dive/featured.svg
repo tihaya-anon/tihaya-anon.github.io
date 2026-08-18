@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="Abstract geometric blog cover">
+  <g fill="none"><line x1="545.4" y1="616.0" x2="840.2" y2="616.0" transform="rotate(67.5 545.4 616.0)" stroke="#ae2679" stroke-width="10" stroke-linecap="round" opacity="0.57"/>
+  <line x1="1094.5" y1="425.2" x2="1396.6" y2="425.2" transform="rotate(112.5 1094.5 425.2)" stroke="#dd66ae" stroke-width="15" stroke-linecap="round" opacity="0.35"/>
+  <line x1="62.9" y1="-47.4" x2="189.8" y2="-47.4" transform="rotate(112.5 62.9 -47.4)" stroke="#ae2679" stroke-width="10" stroke-linecap="round" opacity="0.44"/>
+  <line x1="255.9" y1="320.3" x2="571.1" y2="320.3" transform="rotate(157.5 255.9 320.3)" stroke="#ae2679" stroke-width="14" stroke-linecap="round" opacity="0.35"/>
+  <line x1="1102.8" y1="18.5" x2="1349.1" y2="18.5" transform="rotate(157.5 1102.8 18.5)" stroke="#215b9a" stroke-width="14" stroke-linecap="round" opacity="0.38"/>
+  <line x1="795.3" y1="343.4" x2="923.9" y2="343.4" transform="rotate(67.5 795.3 343.4)" stroke="#6bb8db" stroke-width="12" stroke-linecap="round" opacity="0.54"/>
+  <line x1="538.6" y1="706.9" x2="726.9" y2="706.9" transform="rotate(112.5 538.6 706.9)" stroke="#ae2679" stroke-width="14" stroke-linecap="round" opacity="0.48"/></g>
+  <g transform="translate(592.0 328.6) rotate(54.1) scale(2.59) translate(-50 -50)"><path
+    d="M 50 50 C 63 38.8, 63 21.3, 50 15 C 37 21.3, 37 38.8, 50 50 C 66.86 53.18, 80.54 42.27, 77.36 28.18 C 64.33 21.94, 50.65 32.85, 50 50 C 58.03 65.17, 75.09 69.06, 84.12 57.79 C 80.87 43.71, 63.81 39.82, 50 50 C 43.15 65.73, 50.74 81.5, 65.19 81.53 C 74.17 70.22, 66.57 54.45, 50 50 C 33.43 54.45, 25.83 70.22, 34.81 81.53 C 49.26 81.5, 56.85 65.73, 50 50 C 36.19 39.82, 19.13 43.71, 15.88 57.79 C 24.91 69.06, 41.97 65.17, 50 50 C 49.35 32.85, 35.67 21.94, 22.64 28.18 C 19.46 42.27, 33.14 53.18, 50 50"
+    fill="none"
+    stroke="#dd66ae"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  /></g>
+</svg>
