@@ -26,7 +26,7 @@
     {{ end }}
   {{ end }}
 
-  {{ if $shouldShowDate }}
+  {{ if and $shouldShowDate (gt (.Date | time.Format "2006") 1) }}
     {{ $meta.Add "partials" (slice (partial "meta/date.html" .Date)) }}
   {{ end }}
 
