@@ -1,6 +1,7 @@
 ---
 title: "Cloud Native"
 description: "Practical introductions to containers, orchestration, and the systems used to build and operate cloud-native applications."
+orderByWeight: true
 ---
 
 Introductions to cloud-native technologies, organized around the technical

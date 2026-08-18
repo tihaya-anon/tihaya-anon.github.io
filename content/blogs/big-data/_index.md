@@ -1,6 +1,7 @@
 ---
 title: "Big Data"
 description: "Practical introductions to the systems behind event streams, distributed processing, and analytical tables."
+orderByWeight: true
 ---
 
 Introductions to the building blocks of a modern data platform, organized around
