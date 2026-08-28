@@ -3,8 +3,8 @@ title: "Bash Config"
 weight: 6
 date: 2026-08-11
 draft: false
-description: "A portable Bash setup with a focused alias collection and a Starship prompt."
-summary: "A portable Bash setup with a focused alias collection and a Starship prompt."
+description: "A portable Bash setup with a focused alias collection, ble.sh line editing, and a Starship prompt."
+summary: "A portable Bash setup with a focused alias collection, ble.sh line editing, and a Starship prompt."
 tags: ["bash", "shell", "terminal", "config"]
 ---
 
@@ -21,7 +21,8 @@ The files load in this order:
    `ls` and grep aliases, so there are no competing definitions.
 3. `.bash_env` and `.mirrors` provide private exports and host-specific mirror
    settings without putting secrets in the public config.
-4. Starship replaces the default Bash prompt when `starship` is available.
+4. `.blerc` customizes `ble.sh` when the line editor is installed.
+5. Starship replaces the default Bash prompt when `starship` is available.
 
 The configuration targets Debian or Ubuntu, but missing optional tools such as
 `ble.sh`, Homebrew, NVM, SDKMAN, Cargo, Zoxide, and Starship are safely skipped.
@@ -38,6 +39,7 @@ committed or pasted into a public post. Restricting it with `chmod 600
 ~/.bash_env` is appropriate when it contains credentials.
 
 ## `.bashrc`
+
 ```sh
 # ~/.bashrc: executed by bash(1) for non-login shells.
 
@@ -175,6 +177,42 @@ command -v starship >/dev/null 2>&1 && eval "$(starship init bash)"
 unset -f path_prepend path_append
 ```
 
+## `.blerc`
+
+`ble.sh` uses this file for readline-style editing behavior. This config makes
+vi mode the default, shows Normal mode explicitly, changes the cursor shape by
+mode, enables Meta bindings, and keeps Enter as command execution in both vi
+insert and normal modes.
+
+```sh
+# Force ble.sh to use Vim editing mode
+bleopt default_keymap=vi
+
+function blerc/vim-mode-hook {
+  # Make the current mode obvious
+  bleopt keymap_vi_mode_show=1
+  bleopt keymap_vi_mode_string_nmap=$'\e[1m-- NORMAL --\e[m'
+
+  # Vim-like cursor:
+  # block in Normal mode, beam in Insert mode
+  ble-bind -m vi_nmap --cursor 2
+  ble-bind -m vi_imap --cursor 5
+
+  # Enable Alt/Meta bindings.
+  # Among other things, this gives us Alt-Enter for inserting newline.
+  ble-decode/keymap:vi_imap/define-meta-bindings
+
+  # Enter ALWAYS executes the command.
+  # This avoids needing Ctrl-j for multiline execution.
+  ble-bind -m vi_imap -f 'C-m' accept-line
+  ble-bind -m vi_imap -f 'RET' accept-line
+  ble-bind -m vi_nmap -f 'C-m' accept-line
+  ble-bind -m vi_nmap -f 'RET' accept-line
+}
+
+blehook/eval-after-load keymap_vi blerc/vim-mode-hook
+```
+
 ## `.bash_aliases`
 
 These are intentionally additive: `ls`, `ll`, and the grep family are already
@@ -261,6 +299,7 @@ alias tg='terragrunt'
 ```
 
 ## `.config/starship.toml`
+
 ```toml
 "$schema" = 'https://starship.rs/config-schema.json'
 
