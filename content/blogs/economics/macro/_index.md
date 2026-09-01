@@ -1,4 +1,0 @@
----
-title: "macroeconomics"
-description: "placeholder"
----
