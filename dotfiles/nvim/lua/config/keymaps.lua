@@ -10,3 +10,5 @@ vim.keymap.set("n", "<leader>ac", function()
     },
   })
 end, { desc = "Codex" })
+
+vim.keymap.set("x", "<leader>b", 'c**<C-r>"**<Esc>', { desc = "Bold selection" })
