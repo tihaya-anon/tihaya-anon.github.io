@@ -221,7 +221,6 @@ leaving it running; use `command ping` for the system default behavior.
 
 ```sh
 alias python='python3'
-alias mk='make'
 alias bcat='batcat'
 alias c='clear'
 alias src='source'
@@ -231,6 +230,7 @@ alias l.='ls -d .* --color=auto'
 alias ..='cd ..'
 
 # Editors
+alias nv=nvim
 alias vi=nvim
 alias svi='sudo vi'
 
@@ -253,34 +253,34 @@ alias gf='git fetch'
 alias grb='git rebase'
 
 gr() {
-    if [ "$#" -eq 0 ]; then
-        git remote -v
-    else
-        git remote "$@"
-    fi
+  if [ "$#" -eq 0 ]; then
+    git remote -v
+  else
+    git remote "$@"
+  fi
 }
 alias gcp='git cherry-pick'
 alias gst='git stash'
 # Show the five most recent commits unless a count is supplied.
 glg() {
-    if [ "$#" -eq 0 ]; then
-        git log --oneline -n 5
-    else
-        git log --oneline -n "$@"
-    fi
+  if [ "$#" -eq 0 ]; then
+    git log --oneline -n 5
+  else
+    git log --oneline -n "$@"
+  fi
 }
 # Create merge commits without opening an editor, except when explicitly requested.
 gmg() {
-    local arg
+  local arg
 
-    for arg in "$@"; do
-        if [ "$arg" = '-e' ]; then
-            git merge "$@"
-            return
-        fi
-    done
+  for arg in "$@"; do
+    if [ "$arg" = '-e' ]; then
+      git merge "$@"
+      return
+    fi
+  done
 
-    git merge --no-edit "$@"
+  git merge --no-edit "$@"
 }
 
 # Docker
@@ -292,6 +292,29 @@ alias dr='docker run'
 alias drm='docker rm'
 alias dpss='docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"'
 alias lzd='lazydocker'
+
+# Kubernetes
+k() {
+  if [ -n "${KUBECTL_NAMESPACE:-}" ]; then
+    kubectl --namespace="$KUBECTL_NAMESPACE" "$@"
+  else
+    kubectl "$@"
+  fi
+}
+alias ka='k apply'
+alias kd='k describe'
+alias kdel='k delete'
+alias kg='k get'
+alias kga='k get all'
+alias kgp='k get pods'
+alias kgd='k get deployments'
+alias kgs='k get services'
+alias kgn='k get nodes'
+alias kl='k logs'
+alias kex='k exec -it'
+alias kfwd='sudo -E kubefwd svc'
+alias kctx='k config current-context'
+alias k9='k9s'
 
 # Infrastructure
 alias tf='terraform'
