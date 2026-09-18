@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="Abstract geometric blog cover">
+  <g fill="none"><line x1="-36.7" y1="121.8" x2="106.5" y2="121.8" transform="rotate(22.5 -36.7 121.8)" stroke="#ae2679" stroke-width="15" stroke-linecap="round" opacity="0.35"/>
+  <line x1="308.6" y1="603.9" x2="642.9" y2="603.9" transform="rotate(157.5 308.6 603.9)" stroke="#215b9a" stroke-width="12" stroke-linecap="round" opacity="0.38"/>
+  <line x1="308.6" y1="552.2" x2="552.6" y2="552.2" transform="rotate(112.5 308.6 552.2)" stroke="#215b9a" stroke-width="14" stroke-linecap="round" opacity="0.47"/>
+  <line x1="1126.4" y1="24.7" x2="1336.3" y2="24.7" transform="rotate(112.5 1126.4 24.7)" stroke="#ae2679" stroke-width="14" stroke-linecap="round" opacity="0.47"/>
+  <line x1="441.8" y1="510.9" x2="659.1" y2="510.9" transform="rotate(22.5 441.8 510.9)" stroke="#dd66ae" stroke-width="10" stroke-linecap="round" opacity="0.48"/></g>
+  <g transform="translate(857.7 196.6) rotate(200.3) scale(3.49) translate(-50 -50)"><path
+    d="M 50 50 C 63 38.8, 63 21.3, 50 15 C 37 21.3, 37 38.8, 50 50 C 66.86 53.18, 80.54 42.27, 77.36 28.18 C 64.33 21.94, 50.65 32.85, 50 50 C 58.03 65.17, 75.09 69.06, 84.12 57.79 C 80.87 43.71, 63.81 39.82, 50 50 C 43.15 65.73, 50.74 81.5, 65.19 81.53 C 74.17 70.22, 66.57 54.45, 50 50 C 33.43 54.45, 25.83 70.22, 34.81 81.53 C 49.26 81.5, 56.85 65.73, 50 50 C 36.19 39.82, 19.13 43.71, 15.88 57.79 C 24.91 69.06, 41.97 65.17, 50 50 C 49.35 32.85, 35.67 21.94, 22.64 28.18 C 19.46 42.27, 33.14 53.18, 50 50"
+    fill="none"
+    stroke="#6bb8db"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  /></g>
+</svg>
