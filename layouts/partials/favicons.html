@@ -1,5 +1,19 @@
 {{ $logo := resources.Get site.Params.logo }}
 {{ with $logo }}
-  <link rel="icon" type="{{ .MediaType.Type }}" href="{{ .RelPermalink }}">
-  <link rel="shortcut icon" href="{{ .RelPermalink }}">
+  {{/* Bake the theme text colors (neutral-800 / neutral-100) into two variants, since favicons ignore currentColor. */}}
+  {{ $light := resources.FromString "img/favicon-light.svg" (replace .Content "currentColor" "rgb(39, 42, 73)") }}
+  {{ $dark := resources.FromString "img/favicon-dark.svg" (replace .Content "currentColor" "rgb(244, 241, 233)") }}
+  <link id="site-favicon" rel="icon" type="{{ .MediaType.Type }}" href="{{ $light.RelPermalink }}">
+  <script>
+    (() => {
+      const icon = document.getElementById("site-favicon");
+      const root = document.documentElement;
+      const sync = () => {
+        const href = root.classList.contains("dark") ? "{{ $dark.RelPermalink }}" : "{{ $light.RelPermalink }}";
+        if (icon.getAttribute("href") !== href) icon.setAttribute("href", href);
+      };
+      sync();
+      new MutationObserver(sync).observe(root, { attributes: true, attributeFilter: ["class"] });
+    })();
+  </script>
 {{ end }}
