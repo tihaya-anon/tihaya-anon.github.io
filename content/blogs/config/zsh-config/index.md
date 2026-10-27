@@ -36,8 +36,8 @@ The script downloads the repo archive and then:
    or fast-forwards them when they are already there;
 4. installs `zsh` with `apt-get` (or Homebrew) when it is missing and makes it
    the login shell with `chsh`, which asks for your password;
-5. seeds an empty `~/.zsh_history` from `~/.bash_history`, so autosuggestions
-   have history to draw from on the first day.
+5. imports an existing `~/.bash_history` into an empty `~/.zsh_history`, so
+   autosuggestions have history to draw from right away.
 
 Check the plan without changing anything:
 
@@ -58,17 +58,14 @@ Starship is not installed by the script; get it from
 
 ## Load order
 
-{{< mermaid >}}
-flowchart TB
-    A["~/.zshenv · every zsh, including scripts"] --> B["/etc/zsh/zprofile, then ~/.zprofile · login shells only"]
-    B --> C["/etc/profile.d, Homebrew, PATH, exports"]
-    C --> D["~/.zsh_env and ~/.mirrors · private, never committed"]
-    D --> E["~/.zshrc · interactive shells"]
-    E --> F["~/.zsh_aliases"]
-    F --> G["completion, vi keymap, cursor shape"]
-    G --> H["NVM, SDKMAN, Zoxide, Starship"]
-    H --> I["autosuggestions, then syntax highlighting"]
-{{< /mermaid >}}
+1. `~/.zshenv` runs for every zsh, including scripts.
+2. `~/.zprofile` runs for login shells, after `/etc/zsh/zprofile`. It loads
+   `/etc/profile.d`, Homebrew, `PATH`, and exports, then the private
+   `~/.zsh_env` and `~/.mirrors`.
+3. `~/.zshrc` runs for interactive shells. It sets history and base aliases,
+   loads `~/.zsh_aliases`, configures completion and the vi keymap, starts
+   NVM, SDKMAN, Zoxide, and Starship, and loads autosuggestions and then syntax
+   highlighting last.
 
 A WSL terminal starts a login shell, so the environment from `.zprofile` is set
 once and inherited by every shell, editor, and terminal split started from it.
@@ -90,7 +87,7 @@ or pasted into a public post. The installer keeps it at mode `600`.
 
 ## Vi line editing
 
-`bindkey -v` replaces what `ble.sh` used to do for Bash:
+The line editor runs in vi mode (`bindkey -v`):
 
 - Insert mode shows a beam cursor and Normal mode a block cursor.
 - Starship's `character` module switches from `❯` to `❮` in Normal mode.
@@ -118,8 +115,8 @@ skip_global_compinit=1
 
 `(N-/)` is a glob qualifier: it keeps a directory only when it exists, so the
 same `path` list works on machines without Pulumi, Terragrunt, or a local Go.
-`typeset -U` keeps the first occurrence of each entry, which also cleans up the
-duplicates that nested shells used to add.
+`typeset -U` keeps only the first occurrence of each entry, so nested shells do
+not pile up duplicates.
 
 ```zsh
 # ~/.zprofile: executed by zsh(1) for login shells.
