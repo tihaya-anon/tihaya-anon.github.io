@@ -13,6 +13,15 @@
     Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
+/* Maple Mono draws its ligatures through calt as well as liga. */
+code,
+kbd,
+samp,
+pre {
+  font-variant-ligatures: none;
+  font-feature-settings: "liga" 0, "calt" 0;
+}
+
 .highlight-wrapper pre {
   overflow-x: hidden;
 }
