@@ -35,7 +35,9 @@ The script downloads the repo archive and then:
 3. clones the two plugins into `${XDG_DATA_HOME:-$HOME/.local/share}/zsh/plugins`,
    or fast-forwards them when they are already there;
 4. installs `zsh` with `apt-get` (or Homebrew) when it is missing and makes it
-   the login shell with `chsh`, which asks for your password.
+   the login shell with `chsh`, which asks for your password;
+5. seeds an empty `~/.zsh_history` from `~/.bash_history`, so autosuggestions
+   have history to draw from on the first day.
 
 Check the plan without changing anything:
 
@@ -97,6 +99,9 @@ or pasted into a public post. The installer keeps it at mode `600`.
   started, as in a normal editor.
 - Up and Down search history for commands that start with the text already
   typed. `Ctrl-R` in Insert mode, or `/` in Normal mode, searches incrementally.
+
+History autosuggestions appear as dim text after the cursor. `→`, `End`, or
+`Ctrl-F` accepts the whole suggestion.
 
 `KEYTIMEOUT=1` makes `Esc` switch to Normal mode without a noticeable delay.
 
@@ -261,7 +266,8 @@ export SDKMAN_DIR="$HOME/.sdkman"
 # Plugins are cloned by the installer. Syntax highlighting must load last.
 zsh_plugins="${XDG_DATA_HOME:-$HOME/.local/share}/zsh/plugins"
 [[ -r "$zsh_plugins/zsh-autosuggestions/zsh-autosuggestions.zsh" ]] &&
-    source "$zsh_plugins/zsh-autosuggestions/zsh-autosuggestions.zsh"
+    source "$zsh_plugins/zsh-autosuggestions/zsh-autosuggestions.zsh" &&
+    bindkey -M viins '^F' autosuggest-accept
 [[ -r "$zsh_plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]] &&
     source "$zsh_plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 unset zsh_plugins

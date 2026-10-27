@@ -251,6 +251,21 @@ if [ "$with_shell" -eq 1 ]; then
   fi
 fi
 
+# Seed zsh history from bash once, so autosuggestions have something to offer on day one.
+# An interactive zsh writes the file, which keeps zsh's own encoding for non-ASCII commands.
+if [ -s "$HOME/.bash_history" ] && [ ! -s "$HOME/.zsh_history" ]; then
+  echo "Import:  $HOME/.bash_history -> $HOME/.zsh_history"
+
+  if [ "$dry_run" -eq 0 ] && command -v zsh >/dev/null 2>&1; then
+    zsh -f -i -c '
+      unset HISTFILE; HISTSIZE=100000; SAVEHIST=100000
+      setopt hist_ignore_all_dups hist_save_no_dups hist_reduce_blanks
+      while IFS= read -r line; do [[ -n $line ]] && print -s -- "$line"; done < ~/.bash_history
+      fc -W ~/.zsh_history
+    ' </dev/null
+  fi
+fi
+
 if [ "$dry_run" -eq 1 ]; then
   echo "Dry run only; no files changed."
   exit 0
