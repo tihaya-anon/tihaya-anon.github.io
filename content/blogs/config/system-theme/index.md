@@ -198,6 +198,9 @@ style = "bold magenta"
 format = '[ $symbol$branch ]($style)'
 
 [git_status]
+# gitoxide counts the contents of an uninitialized submodule as untracked,
+# while `git status` ignores them. Use the executable so the prompt agrees.
+use_git_executable = true
 style = "bold yellow"
 format = '[ ($all_status$ahead_behind )]($style)'
 
@@ -278,6 +281,15 @@ disabled = false
 show_notifications = true
 min_time_to_notify = 45000
 ```
+
+One setting in that file is not about color. Starship reads repository state
+with gitoxide by default, and gitoxide counts the files inside an uninitialized
+submodule as untracked. This repository keeps `themes/blowfish` as a submodule
+but has the theme files on disk without a `.git` entry, so `git status` was
+clean while the prompt showed a `?`. Setting `use_git_executable = true` makes
+Starship ask git itself, which brings the prompt back in line with `git status`.
+It costs one git process per prompt, which is a fair trade for a status line
+that means what the command says.
 
 The previous config pinned all four Catppuccin palettes as hex values and
 selected `catppuccin_mocha`. That looked right in dark mode and ignored the

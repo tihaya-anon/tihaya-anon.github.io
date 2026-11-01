@@ -76,6 +76,9 @@ style = "bold magenta"
 format = '[ $symbol$branch ]($style)'
 
 [git_status]
+# gitoxide counts the contents of an uninitialized submodule as untracked,
+# while `git status` ignores them. Use the executable so the prompt agrees.
+use_git_executable = true
 style = "bold yellow"
 format = '[ ($all_status$ahead_behind )]($style)'
 
