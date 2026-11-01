@@ -30,6 +30,7 @@ The script downloads the repo archive and then:
 
 1. copies `dotfiles/zsh` to `~/.zshenv`, `~/.zprofile`, `~/.zshrc`,
    `~/.zsh_aliases`, and `${XDG_CONFIG_HOME:-$HOME/.config}/starship.toml`,
+   plus the [WezTerm and OpenCode theme configs](/blogs/config/system-theme/),
    moving any different existing file to a timestamped backup first;
 2. creates `~/.zsh_env` if it is missing and restricts it to mode `600`;
 3. clones the two plugins into `${XDG_DATA_HOME:-$HOME/.local/share}/zsh/plugins`,

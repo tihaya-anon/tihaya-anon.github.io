@@ -15,9 +15,12 @@ usage() {
   cat <<'EOF'
 Usage: sh scripts/install-zsh-config.sh [options]
 
+Installs the Zsh files, the Starship prompt, and the WezTerm and OpenCode
+theme configs.
+
 Options:
   --dry-run        Show what would happen without changing anything
-  --source <path>  Config source directory
+  --source <path>  Config source directory (the dotfiles root)
   --ref <ref>      Git ref to download when using the remote archive
   --no-backup      Fail if a target exists with different content
   --no-plugins     Skip cloning zsh-autosuggestions and zsh-syntax-highlighting
@@ -38,7 +41,7 @@ get_local_source() {
   case "$0" in
     */*)
       script_dir=$(CDPATH= cd "$(dirname "$0")" && pwd)
-      candidate="$script_dir/../dotfiles/zsh"
+      candidate="$script_dir/../dotfiles"
 
       if [ -d "$candidate" ]; then
         CDPATH= cd "$candidate" && pwd
@@ -112,14 +115,21 @@ else
   source_path=$(get_local_source)
 fi
 
+# Keep accepting dotfiles/zsh from older invocations.
+if [ -f "$source_path/zshrc" ] && [ -d "$source_path/../wezterm" ]; then
+  source_path=$(CDPATH= cd "$source_path/.." && pwd)
+fi
+
 [ -n "$archive_url" ] || archive_url="https://codeload.github.com/tihaya-anon/tihaya-anon.github.io/tar.gz/$ref"
 
-# Each line maps a file in dotfiles/zsh to its install target.
-file_map="zshenv $HOME/.zshenv
-zprofile $HOME/.zprofile
-zshrc $HOME/.zshrc
-zsh_aliases $HOME/.zsh_aliases
-starship.toml $config_home/starship.toml"
+# Each line maps a file in dotfiles to its install target.
+file_map="zsh/zshenv $HOME/.zshenv
+zsh/zprofile $HOME/.zprofile
+zsh/zshrc $HOME/.zshrc
+zsh/zsh_aliases $HOME/.zsh_aliases
+zsh/starship.toml $config_home/starship.toml
+wezterm/wezterm.lua $config_home/wezterm/wezterm.lua
+opencode/cli.json $config_home/opencode/cli.json"
 
 plugins="zsh-autosuggestions zsh-syntax-highlighting"
 timestamp=$(date +%Y%m%d-%H%M%S)
@@ -145,10 +155,10 @@ else
   curl -fsSL "$archive_url" -o "$tmp_dir/repo.tar.gz"
   tar -xzf "$tmp_dir/repo.tar.gz" -C "$tmp_dir"
 
-  source_path=$(find "$tmp_dir" -path "*/dotfiles/zsh" -type d | head -n 1)
+  source_path=$(find "$tmp_dir" -path "*/dotfiles" -type d | head -n 1)
 
   if [ -z "$source_path" ]; then
-    echo "Could not find dotfiles/zsh in archive" >&2
+    echo "Could not find dotfiles in archive" >&2
     exit 1
   fi
 fi

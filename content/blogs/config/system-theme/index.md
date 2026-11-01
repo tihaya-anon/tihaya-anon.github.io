@@ -392,19 +392,42 @@ dotfiles
     └── starship.toml
 ```
 
-On a machine with the repository already cloned:
+Install directly from GitHub:
 
 ```sh
-mkdir -p ~/.config/wezterm ~/.config/opencode
-cp dotfiles/wezterm/wezterm.lua ~/.config/wezterm/wezterm.lua
-cp dotfiles/opencode/cli.json ~/.config/opencode/cli.json
-sh scripts/install-zsh-config.sh
+curl -fsSL https://raw.githubusercontent.com/tihaya-anon/tihaya-anon.github.io/main/scripts/install-theme-config.sh | sh
 ```
 
-`install-zsh-config.sh` already copies `starship.toml` to
-`~/.config/starship.toml`; it is the same file described above. The zsh
-installer also backs up a different existing file before replacing it, which
-is worth doing by hand for `cli.json` if the local copy has extra keybinds.
+The script copies the three files above into
+`${XDG_CONFIG_HOME:-$HOME/.config}`, moving any different existing file to a
+timestamped backup first:
+
+```text
+wezterm/wezterm.lua  -> ~/.config/wezterm/wezterm.lua
+zsh/starship.toml    -> ~/.config/starship.toml
+opencode/cli.json    -> ~/.config/opencode/cli.json
+```
+
+Check the plan without changing anything:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/tihaya-anon/tihaya-anon.github.io/main/scripts/install-theme-config.sh | sh -s -- --dry-run
+```
+
+If the repo is already cloned locally, run the same installer from the
+checkout:
+
+```sh
+sh scripts/install-theme-config.sh
+```
+
+Use `--no-backup` to fail instead of replacing an existing file, or `--ref` to
+read the files from another branch.
+
+The [Zsh installer](/blogs/config/zsh-config/#install-on-a-new-machine) writes
+the same three theme files and also handles `~/.zshrc`, `~/.zprofile`, and the
+plugins. Running either script is enough; run both and the second one reports
+the shared files as up to date.
 
 To verify each layer:
 
