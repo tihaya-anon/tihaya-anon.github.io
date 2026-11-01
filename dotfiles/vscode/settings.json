@@ -1,0 +1,89 @@
+{
+  "git.openRepositoryInParentFolders": "never",
+  "notebook.lineNumbers": "on",
+  "workbench.activityBar.location": "top",
+  "workbench.colorTheme": "Catppuccin Latte",
+  "workbench.preferredDarkColorTheme": "Catppuccin Mocha",
+  "workbench.preferredHighContrastColorTheme": "Catppuccin Mocha",
+  "workbench.preferredHighContrastLightColorTheme": "Catppuccin Latte",
+  "workbench.preferredLightColorTheme": "Catppuccin Latte",
+  "catppuccin-noctis-icons.hidesExplorerArrows": false,
+  "editor.fontFamily": "'Maple Mono NF CN', Consolas, 'Courier New', monospace",
+  "editor.codeLensFontFamily": "Maple Mono NF CN",
+  // Maple Mono has a single ligature/contextual feature, 'calt' (no 'liga' in the font): it
+  // drives both the ligatures and the cursive ("花体") italic. Disabling it gives a plain
+  // slanted italic (no loops on l/k) and no ligatures.
+  "editor.fontLigatures": "'calt' 0, 'cv01' 1, 'cv02' 1, 'cv33' 1, 'cv34' 1, 'cv35' 1, 'cv36' 1, 'cv61' 1, 'cv62' 1, 'ss05' 1, 'ss06' 1",
+  "terminal.integrated.fontFamily": "Maple Mono NF CN",
+  "terminal.integrated.fontLigatures.enabled": false,
+  "editor.formatOnSave": true,
+  "files.autoSave": "afterDelay",
+  "workbench.startupEditor": "none",
+  "vim.enableNeovim": true,
+  "vim.smartRelativeLine": true,
+  "workbench.experimental.modernUI": false,
+  "redhat.telemetry.enabled": true,
+  "workbench.iconTheme": "catppuccin-mocha",
+  "workbench.activityBar.compact": true,
+  "catppuccin-icons.hidesExplorerArrows": true,
+  "terminal.integrated.sendKeybindingsToShell": true,
+  "files.associations": {
+    "PROJECT": "plaintext",
+  },
+  "catppuccin.workbenchMode": "minimal",
+  "catppuccin.accentColor": "lavender",
+  // we try to make semantic highlighting look good
+  "editor.semanticHighlighting.enabled": true,
+  // prevent VSCode from modifying the terminal colors
+  "terminal.integrated.minimumContrastRatio": 1,
+  // make the window's titlebar use the workbench colors
+  "window.titleBarStyle": "custom",
+
+  // applicable if you use Go, this is an opt-in flag!
+  "gopls": {
+    "ui.semanticTokens": true,
+  },
+  "window.autoDetectColorScheme": true,
+
+  // Git decorations: color each state instead of letting them collapse into one
+  // foreground. Renamed files are spelled out because Catppuccin leaves that
+  // color undefined.
+  "git.decorations.enabled": true,
+  "scm.diffDecorations": "all",
+  "explorer.decorations.colors": true,
+  "explorer.decorations.badges": true,
+  "workbench.editor.decorations.colors": true,
+  "workbench.editor.decorations.badges": true,
+  "workbench.colorCustomizations": {
+    "[Catppuccin Latte]": {
+      "gitDecoration.modifiedResourceForeground": "#df8e1d",
+      "gitDecoration.stageModifiedResourceForeground": "#df8e1d",
+      "gitDecoration.addedResourceForeground": "#40a02b",
+      "gitDecoration.untrackedResourceForeground": "#179299",
+      "gitDecoration.deletedResourceForeground": "#d20f39",
+      "gitDecoration.stageDeletedResourceForeground": "#d20f39",
+      "gitDecoration.renamedResourceForeground": "#8839ef",
+      "gitDecoration.conflictingResourceForeground": "#fe640b",
+      "gitDecoration.ignoredResourceForeground": "#9ca0b0",
+      "gitDecoration.submoduleResourceForeground": "#1e66f5",
+      "editorGutter.addedBackground": "#40a02b",
+      "editorGutter.modifiedBackground": "#df8e1d",
+      "editorGutter.deletedBackground": "#d20f39",
+    },
+    "[Catppuccin Mocha]": {
+      "gitDecoration.modifiedResourceForeground": "#f9e2af",
+      "gitDecoration.stageModifiedResourceForeground": "#f9e2af",
+      "gitDecoration.addedResourceForeground": "#a6e3a1",
+      "gitDecoration.untrackedResourceForeground": "#94e2d5",
+      "gitDecoration.deletedResourceForeground": "#f38ba8",
+      "gitDecoration.stageDeletedResourceForeground": "#f38ba8",
+      "gitDecoration.renamedResourceForeground": "#cba6f7",
+      "gitDecoration.conflictingResourceForeground": "#fab387",
+      "gitDecoration.ignoredResourceForeground": "#6c7086",
+      "gitDecoration.submoduleResourceForeground": "#89b4fa",
+      "editorGutter.addedBackground": "#a6e3a1",
+      "editorGutter.modifiedBackground": "#f9e2af",
+      "editorGutter.deletedBackground": "#f38ba8",
+    },
+  },
+}
