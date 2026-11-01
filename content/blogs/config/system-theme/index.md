@@ -9,9 +9,52 @@ tags: ["wezterm", "starship", "opencode", "neovim", "terminal", "theme", "config
 ---
 
 A dark terminal in a light desktop is a flash of glare every time the window
-changes focus. The fix is to make the terminal own the palette and let the
-tools inside inherit it, instead of teaching each tool to read the desktop on
-its own.
+changes focus. This setup makes the terminal own the palette instead of
+teaching every tool to read the desktop on its own: WezTerm follows the system
+appearance, Starship and OpenCode inherit its colors, and Neovim checks the OS
+directly because a full-screen application cannot see the terminal palette.
+
+## Install on a new machine
+
+Install directly from GitHub:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/tihaya-anon/tihaya-anon.github.io/main/scripts/install-theme-config.sh | sh
+```
+
+The script downloads the repo archive and copies the files to
+`${XDG_CONFIG_HOME:-$HOME/.config}`, moving any different existing file to a
+timestamped backup first:
+
+```text
+dotfiles/wezterm/wezterm.lua  -> ~/.config/wezterm/wezterm.lua
+dotfiles/zsh/starship.toml    -> ~/.config/starship.toml
+dotfiles/opencode/cli.json    -> ~/.config/opencode/cli.json
+```
+
+Check the plan without changing anything:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/tihaya-anon/tihaya-anon.github.io/main/scripts/install-theme-config.sh | sh -s -- --dry-run
+```
+
+Use `--no-backup` to fail instead of replacing an existing file, or `--ref` to
+read the files from another branch. If the repo is already cloned locally, run
+the same installer from the checkout:
+
+```sh
+sh scripts/install-theme-config.sh
+```
+
+The [Zsh installer](/blogs/config/zsh-config/#install-on-a-new-machine) writes
+the same three theme files and also handles `~/.zshrc`, `~/.zprofile`, and the
+plugins. Running either script is enough; run both and the second one reports
+the shared files as up to date.
+
+The scripts install configuration only; WezTerm, Starship, OpenCode, and a Nerd
+Font still need to be installed separately.
+
+## How the appearance flows
 
 This is the current setup:
 
@@ -26,7 +69,7 @@ The terminal is the only place that needs a desktop-specific check. Everything
 else either receives the palette through ANSI colors or reads the terminal's
 reported appearance.
 
-```mermaid
+{{< mermaid >}}
 flowchart TB
     A["OS appearance: Light or Dark"] --> B["WezTerm"]
     B --> C["Catppuccin Latte or Mocha palette"]
@@ -35,7 +78,7 @@ flowchart TB
     D --> F["OpenCode TUI"]
     A --> G["Neovim system theme helper"]
     G --> H["Catppuccin Latte or Mocha"]
-```
+{{< /mermaid >}}
 
 Neovim is the exception: it does not trust terminal colors and runs its own
 detection, which is covered in the [Neovim config](/blogs/config/neovim-config/)
@@ -378,58 +421,9 @@ background = {
 }
 ```
 
-## Files and install
+## Verify
 
-The files live next to the other dotfiles:
-
-```text
-dotfiles
-├── opencode
-│   └── cli.json
-├── wezterm
-│   └── wezterm.lua
-└── zsh
-    └── starship.toml
-```
-
-Install directly from GitHub:
-
-```sh
-curl -fsSL https://raw.githubusercontent.com/tihaya-anon/tihaya-anon.github.io/main/scripts/install-theme-config.sh | sh
-```
-
-The script copies the three files above into
-`${XDG_CONFIG_HOME:-$HOME/.config}`, moving any different existing file to a
-timestamped backup first:
-
-```text
-wezterm/wezterm.lua  -> ~/.config/wezterm/wezterm.lua
-zsh/starship.toml    -> ~/.config/starship.toml
-opencode/cli.json    -> ~/.config/opencode/cli.json
-```
-
-Check the plan without changing anything:
-
-```sh
-curl -fsSL https://raw.githubusercontent.com/tihaya-anon/tihaya-anon.github.io/main/scripts/install-theme-config.sh | sh -s -- --dry-run
-```
-
-If the repo is already cloned locally, run the same installer from the
-checkout:
-
-```sh
-sh scripts/install-theme-config.sh
-```
-
-Use `--no-backup` to fail instead of replacing an existing file, or `--ref` to
-read the files from another branch.
-
-The [Zsh installer](/blogs/config/zsh-config/#install-on-a-new-machine) writes
-the same three theme files and also handles `~/.zshrc`, `~/.zprofile`, and the
-plugins. Running either script is enough; run both and the second one reports
-the shared files as up to date.
-
-To verify each layer:
+Check that each layer parses and picks up the palette:
 
 ```sh
 wezterm show-keys >/dev/null   # config parses
