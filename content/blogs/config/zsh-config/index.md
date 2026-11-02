@@ -30,8 +30,8 @@ The script downloads the repo archive and then:
 
 1. copies `dotfiles/zsh` to `~/.zshenv`, `~/.zprofile`, `~/.zshrc`,
    `~/.zsh_aliases`, and `${XDG_CONFIG_HOME:-$HOME/.config}/starship.toml`,
-   plus the [WezTerm and OpenCode theme configs](/blogs/config/system-theme/),
-   moving any different existing file to a timestamped backup first;
+   plus the [WezTerm and OpenCode theme configs](/blogs/config/system-theme/)
+   (under WSL, `wezterm.lua` goes to the Windows profile instead), moving any different existing file to a timestamped backup first;
 2. creates `~/.zsh_env` if it is missing and restricts it to mode `600`;
 3. clones the two plugins into `${XDG_DATA_HOME:-$HOME/.local/share}/zsh/plugins`,
    or fast-forwards them when they are already there;
@@ -261,6 +261,30 @@ export SDKMAN_DIR="$HOME/.sdkman"
 # Starship owns the prompt and shows the vi mode through its character module.
 (( $+commands[starship] )) && eval "$(starship init zsh)"
 
+# Starship's palette is fixed per config file, so keep a Latte copy of the
+# Mocha config and point STARSHIP_CONFIG at it while WezTerm reports light.
+starship_theme() {
+    local base="${XDG_CONFIG_HOME:-$HOME/.config}/starship.toml"
+    local light="${XDG_CACHE_HOME:-$HOME/.cache}/starship/latte.toml"
+    local appearance
+
+    [[ -r $WEZTERM_APPEARANCE_FILE && -r $base ]] || return
+    appearance=$(<$WEZTERM_APPEARANCE_FILE)
+
+    if [[ $appearance == light* ]]; then
+        if [[ ! -r $light || $base -nt $light ]]; then
+            mkdir -p "${light:h}"
+            sed "s/^palette = 'catppuccin_mocha'/palette = 'catppuccin_latte'/" "$base" >| "$light"
+        fi
+        export STARSHIP_CONFIG=$light
+    elif [[ $STARSHIP_CONFIG == $light ]]; then
+        unset STARSHIP_CONFIG
+    fi
+}
+autoload -Uz add-zsh-hook
+(( $+commands[starship] )) && add-zsh-hook precmd starship_theme
+
+
 # Plugins are cloned by the installer. Syntax highlighting must load last.
 zsh_plugins="${XDG_DATA_HOME:-$HOME/.local/share}/zsh/plugins"
 [[ -r "$zsh_plugins/zsh-autosuggestions/zsh-autosuggestions.zsh" ]] &&
@@ -383,9 +407,9 @@ alias tg='terragrunt'
 ## `.config/starship.toml`
 
 `.zshrc` starts Starship when it is installed, but the prompt design lives in a
-separate file. The current config uses ANSI color names instead of a fixed
-Catppuccin palette, so the prompt follows the terminal's light or dark palette.
-The full file and the reasoning are in
+separate file. The config draws a Catppuccin powerline bar from the Mocha
+palette, and the `starship_theme` precmd hook swaps in a Latte copy whenever
+WezTerm reports a light appearance. The full file and the reasoning are in
 [Theme-aware Terminal](/blogs/config/system-theme/#starship).
 
 The installer copies `dotfiles/zsh/starship.toml` to

@@ -11,8 +11,9 @@ tags: ["wezterm", "starship", "opencode", "neovim", "terminal", "theme", "config
 A dark terminal in a light desktop is a flash of glare every time the window
 changes focus. This setup makes the terminal own the palette instead of
 teaching every tool to read the desktop on its own: WezTerm follows the system
-appearance, Starship and OpenCode inherit its colors, and Neovim checks the OS
-directly because a full-screen application cannot see the terminal palette.
+appearance and hands it on to Starship, OpenCode inherits its palette, and
+Neovim checks the OS directly because a full-screen application cannot see the
+terminal palette.
 
 ## Install on a new machine
 
@@ -32,6 +33,10 @@ dotfiles/zsh/starship.toml    -> ~/.config/starship.toml
 dotfiles/opencode/cli.json    -> ~/.config/opencode/cli.json
 ```
 
+Under WSL the terminal is the Windows build of WezTerm, which never reads the
+Linux home. Both installers detect WSL, ask `cmd.exe` for `%USERPROFILE%`, and
+write `wezterm.lua` to `%USERPROFILE%\.config\wezterm\wezterm.lua` instead.
+
 Check the plan without changing anything:
 
 ```sh
@@ -47,7 +52,8 @@ sh scripts/install-theme-config.sh
 ```
 
 The [Zsh installer](/blogs/config/zsh-config/#install-on-a-new-machine) writes
-the same three theme files and also handles `~/.zshrc`, `~/.zprofile`, and the
+the same three theme files and also handles `~/.zshrc`, which holds the
+Starship palette hook, `~/.zprofile`, and the
 plugins. Running either script is enough; run both and the second one reports
 the shared files as up to date.
 
@@ -61,23 +67,24 @@ This is the current setup:
 | Layer    | Appearance source                  | How it switches                            |
 | -------- | ---------------------------------- | ------------------------------------------ |
 | WezTerm  | Desktop appearance API             | Reloads the config when the system changes |
-| Starship | Terminal ANSI palette              | Resolves colors on every prompt render     |
+| Starship | Appearance file written by WezTerm | Picks Mocha or Latte before each prompt    |
 | OpenCode | Terminal palette and appearance    | Follows the terminal while the TUI runs    |
 | Neovim   | OS settings, not the terminal      | Refreshes on focus and resume              |
 
-The terminal is the only place that needs a desktop-specific check. Everything
-else either receives the palette through ANSI colors or reads the terminal's
-reported appearance.
+The terminal is the only place that needs a desktop-specific check. Starship
+reads the result from a file WezTerm leaves behind, and OpenCode reads the
+terminal's reported appearance.
 
 {{< mermaid >}}
 flowchart TB
     A["OS appearance: Light or Dark"] --> B["WezTerm"]
-    B --> C["Catppuccin Latte or Mocha palette"]
-    C --> D["ANSI color names"]
-    D --> E["Starship prompt"]
-    D --> F["OpenCode TUI"]
-    A --> G["Neovim system theme helper"]
-    G --> H["Catppuccin Latte or Mocha"]
+    B --> C["Catppuccin Latte or Mocha color scheme"]
+    B --> D["appearance file"]
+    D --> E["zsh precmd hook"]
+    E --> F["Starship Latte or Mocha palette"]
+    C --> G["OpenCode TUI"]
+    A --> H["Neovim system theme helper"]
+    H --> I["Catppuccin Latte or Mocha"]
 {{< /mermaid >}}
 
 Neovim is the exception: it does not trust terminal colors and runs its own
@@ -89,7 +96,8 @@ post. The other three are new.
 WezTerm exposes the desktop appearance through `wezterm.gui.get_appearance()`.
 It returns `Light`, `Dark`, `LightHighContrast`, or `DarkHighContrast`, and
 WezTerm reloads the config whenever the appearance changes. That means the
-config file only has to map the current value to a color scheme:
+config file only has to map the current value to a color scheme, and record it
+for the shell:
 
 ```lua
 local wezterm = require("wezterm")
@@ -111,10 +119,41 @@ local is_dark = appearance():find("Dark") ~= nil
 
 config.color_scheme = is_dark and "Catppuccin Mocha" or "Catppuccin Latte"
 
-config.font = wezterm.font_with_fallback({
-  "Maple Mono NF",
-  "Noto Sans Mono CJK SC",
-})
+-- Starship cannot see the appearance, so leave it in a file that zshrc reads
+-- before each prompt. Only the GUI knows the real value, and writing only on
+-- change keeps the reload from touching the file every time.
+local is_windows = wezterm.target_triple:find("windows") ~= nil
+local separator = is_windows and "\\" or "/"
+local appearance_file = wezterm.config_dir .. separator .. "appearance"
+
+if wezterm.gui then
+  local value = is_dark and "dark" or "light"
+  local current = io.open(appearance_file, "r")
+  local previous = current and current:read("*l")
+
+  if current then
+    current:close()
+  end
+
+  if previous ~= value then
+    local file = io.open(appearance_file, "w")
+
+    if file then
+      file:write(value, "\n")
+      file:close()
+    end
+  end
+end
+
+-- WSL only inherits the variables named in WSLENV; /p converts the Windows
+-- path to its /mnt form on the way in.
+config.set_environment_variables = {
+  WEZTERM_APPEARANCE_FILE = appearance_file,
+  WSLENV = "TERM:COLORTERM:TERM_PROGRAM:TERM_PROGRAM_VERSION:WEZTERM_APPEARANCE_FILE/p",
+}
+
+-- The CN build of Maple Mono NF carries the CJK glyphs itself.
+config.font = wezterm.font("Maple Mono NF CN")
 config.font_size = 12.0
 config.line_height = 1.1
 
@@ -151,29 +190,39 @@ picks the right scheme anyway.
 `find("Dark")` handles all four return values. Comparing with `== "Dark"`
 would silently turn high-contrast dark mode into the light scheme.
 
-The font list is a fallback chain, not a preference list: Maple Mono NF draws
-the code and prompt glyphs, while Noto Sans Mono CJK SC covers Chinese text
-without replacing the Latin font.
+The appearance file sits next to the config, in `wezterm.config_dir`. The
+config only writes it from the GUI and only when the value changes, so the mux
+fallback cannot overwrite a real `light` with `dark`, and a reload does not
+rewrite the file for nothing. The path reaches the shell as
+`WEZTERM_APPEARANCE_FILE`. A WSL shell only inherits Windows variables listed
+in `WSLENV`, and the `/p` flag converts `C:\Users\...` to `/mnt/c/Users/...` on
+the way in. WezTerm's own four variables are listed too, so they keep reaching
+WSL even if this setting replaces the value WezTerm would have built.
+
+The font is the CN build of Maple Mono NF, which carries the code, prompt, and
+Chinese glyphs in one family, so no fallback chain is needed.
 
 ## Starship
 
 Starship has no desktop appearance API and no automatic palette switching. Its
 `palette` option is a plain name, and environment variables are not expanded
-inside the config file. The prompt follows the system anyway because it uses
-ANSI color names instead of hex values:
+inside the config file. The config therefore keeps Catppuccin's own powerline
+design, filled segments drawn from the Mocha palette, and defines the Latte
+palette beside it:
 
 ```toml
 "$schema" = 'https://starship.rs/config-schema.json'
 
-# Styles use ANSI color names instead of hex values. Starship does not query
-# the desktop itself, so the names resolve through the terminal's palette,
-# which WezTerm swaps when the system appearance changes.
 format = """
+[](red)\
 $os\
 $username\
+[](bg:peach fg:red)\
 $directory\
+[](bg:yellow fg:peach)\
 $git_branch\
 $git_status\
+[](fg:yellow bg:green)\
 $c\
 $rust\
 $golang\
@@ -183,16 +232,23 @@ $java\
 $kotlin\
 $haskell\
 $python\
+[](fg:green bg:sapphire)\
 $conda\
+[](fg:sapphire bg:lavender)\
 $time\
+[ ](fg:lavender)\
 $cmd_duration\
 $line_break\
+\n\
 $character"""
+
+# zshrc swaps this line for catppuccin_latte when WezTerm reports a light
+# appearance, so keep it on a single line in exactly this form.
+palette = 'catppuccin_mocha'
 
 [os]
 disabled = false
-style = "bold red"
-format = '[ $symbol ]($style)'
+style = "bg:red fg:crust"
 
 [os.symbols]
 Windows = ""
@@ -218,13 +274,13 @@ RedHatEnterprise = "󱄛"
 
 [username]
 show_always = true
-style_user = "bold red"
-style_root = "bold red"
-format = '[ $user ]($style)'
+style_user = "bg:red fg:crust"
+style_root = "bg:red fg:crust"
+format = '[ $user]($style)'
 
 [directory]
-style = "bold blue"
-format = '[ $path ]($style)'
+style = "bg:peach fg:crust"
+format = "[ $path ]($style)"
 truncation_length = 3
 truncation_symbol = "…/"
 
@@ -236,93 +292,154 @@ truncation_symbol = "…/"
 "Developer" = "󰲋 "
 
 [git_branch]
-symbol = " "
-style = "bold magenta"
-format = '[ $symbol$branch ]($style)'
+symbol = ""
+style = "bg:yellow"
+format = '[[ $symbol $branch ](fg:crust bg:yellow)]($style)'
 
 [git_status]
 # gitoxide counts the contents of an uninitialized submodule as untracked,
 # while `git status` ignores them. Use the executable so the prompt agrees.
 use_git_executable = true
-style = "bold yellow"
-format = '[ ($all_status$ahead_behind )]($style)'
+style = "bg:yellow"
+format = '[[($all_status$ahead_behind )](fg:crust bg:yellow)]($style)'
 
 [nodejs]
 symbol = ""
-style = "bold green"
-format = '[$symbol $version ]($style)'
+style = "bg:green"
+format = '[[ $symbol( $version) ](fg:crust bg:green)]($style)'
 
 [c]
 symbol = " "
-style = "bold green"
-format = '[$symbol $version ]($style)'
+style = "bg:green"
+format = '[[ $symbol( $version) ](fg:crust bg:green)]($style)'
 
 [rust]
 symbol = ""
-style = "bold green"
-format = '[$symbol $version ]($style)'
+style = "bg:green"
+format = '[[ $symbol( $version) ](fg:crust bg:green)]($style)'
 
 [golang]
 symbol = ""
-style = "bold green"
-format = '[$symbol $version ]($style)'
+style = "bg:green"
+format = '[[ $symbol( $version) ](fg:crust bg:green)]($style)'
 
 [php]
 symbol = ""
-style = "bold green"
-format = '[$symbol $version ]($style)'
+style = "bg:green"
+format = '[[ $symbol( $version) ](fg:crust bg:green)]($style)'
 
 [java]
 symbol = " "
-style = "bold green"
-format = '[$symbol $version ]($style)'
+style = "bg:green"
+format = '[[ $symbol( $version) ](fg:crust bg:green)]($style)'
 
 [kotlin]
 symbol = ""
-style = "bold green"
-format = '[$symbol $version ]($style)'
+style = "bg:green"
+format = '[[ $symbol( $version) ](fg:crust bg:green)]($style)'
 
 [haskell]
 symbol = ""
-style = "bold green"
-format = '[$symbol $version ]($style)'
+style = "bg:green"
+format = '[[ $symbol( $version) ](fg:crust bg:green)]($style)'
 
 [python]
 symbol = ""
-style = "bold green"
-format = '[$symbol $version(\(#$virtualenv\)) ]($style)'
+style = "bg:green"
+format = '[[ $symbol( $version)(\(#$virtualenv\)) ](fg:crust bg:green)]($style)'
+
+[docker_context]
+symbol = ""
+style = "bg:sapphire"
+format = '[[ $symbol( $context) ](fg:crust bg:sapphire)]($style)'
 
 [conda]
 symbol = "  "
-style = "bold cyan"
-format = '[ $symbol$environment ]($style)'
+style = "fg:crust bg:sapphire"
+format = '[$symbol$environment ]($style)'
 ignore_base = false
 
 [time]
 disabled = false
 time_format = "%R"
-style = "bold cyan"
-format = '[ $time ]($style)'
+style = "bg:lavender"
+format = '[[  $time ](fg:crust bg:lavender)]($style)'
 
 [line_break]
 disabled = true
 
 [character]
 disabled = false
-success_symbol = '[❯](bold green)'
-error_symbol = '[❯](bold red)'
-vimcmd_symbol = '[❮](bold green)'
-vimcmd_replace_one_symbol = '[❮](bold magenta)'
-vimcmd_replace_symbol = '[❮](bold magenta)'
-vimcmd_visual_symbol = '[❮](bold yellow)'
+success_symbol = '[❯](bold fg:green)'
+error_symbol = '[❯](bold fg:red)'
+vimcmd_symbol = '[❮](bold fg:green)'
+vimcmd_replace_one_symbol = '[❮](bold fg:lavender)'
+vimcmd_replace_symbol = '[❮](bold fg:lavender)'
+vimcmd_visual_symbol = '[❮](bold fg:yellow)'
 
 [cmd_duration]
 show_milliseconds = true
-format = '[ $duration ]($style)'
-style = "bold yellow"
+format = " in $duration "
+style = "bg:lavender"
 disabled = false
 show_notifications = true
 min_time_to_notify = 45000
+
+[palettes.catppuccin_mocha]
+rosewater = "#f5e0dc"
+flamingo = "#f2cdcd"
+pink = "#f5c2e7"
+mauve = "#cba6f7"
+red = "#f38ba8"
+maroon = "#eba0ac"
+peach = "#fab387"
+yellow = "#f9e2af"
+green = "#a6e3a1"
+teal = "#94e2d5"
+sky = "#89dceb"
+sapphire = "#74c7ec"
+blue = "#89b4fa"
+lavender = "#b4befe"
+text = "#cdd6f4"
+subtext1 = "#bac2de"
+subtext0 = "#a6adc8"
+overlay2 = "#9399b2"
+overlay1 = "#7f849c"
+overlay0 = "#6c7086"
+surface2 = "#585b70"
+surface1 = "#45475a"
+surface0 = "#313244"
+base = "#1e1e2e"
+mantle = "#181825"
+crust = "#11111b"
+
+[palettes.catppuccin_latte]
+rosewater = "#dc8a78"
+flamingo = "#dd7878"
+pink = "#ea76cb"
+mauve = "#8839ef"
+red = "#d20f39"
+maroon = "#e64553"
+peach = "#fe640b"
+yellow = "#df8e1d"
+green = "#40a02b"
+teal = "#179299"
+sky = "#04a5e5"
+sapphire = "#209fb5"
+blue = "#1e66f5"
+lavender = "#7287fd"
+text = "#4c4f69"
+subtext1 = "#5c5f77"
+subtext0 = "#6c6f85"
+overlay2 = "#7c7f93"
+overlay1 = "#8c8fa1"
+overlay0 = "#9ca0b0"
+surface2 = "#acb0be"
+surface1 = "#bcc0cc"
+surface0 = "#ccd0da"
+base = "#eff1f5"
+mantle = "#e6e9ef"
+crust = "#dce0e8"
 ```
 
 One setting in that file is not about color. Starship reads repository state
@@ -334,23 +451,51 @@ Starship ask git itself, which brings the prompt back in line with `git status`.
 It costs one git process per prompt, which is a fair trade for a status line
 that means what the command says.
 
-The previous config pinned all four Catppuccin palettes as hex values and
-selected `catppuccin_mocha`. That looked right in dark mode and ignored the
-desktop entirely. Removing the palette tables and using `red`, `blue`, `cyan`,
-and friends delegates the choice to WezTerm. When the terminal switches from
-Mocha to Latte, the prompt switches with it on the next render; no shell reload
-and no second config file are involved.
+Each segment pairs a palette background with `crust` text, the pairing
+Catppuccin designs for each flavor, so the bar keeps its contrast in both. An
+earlier version used ANSI color names to let WezTerm's palette carry the switch
+for free. That had to give up the filled bar, though: the same ANSI `red` is
+light in Mocha and dark in Latte, so no single text color reads on top of both.
 
-The cost is the filled powerline bar. A filled segment needs a background and a
-foreground that contrast with each other, and ANSI names do not guarantee that
-pairing in both flavors: the same `red` is light in Mocha and dark in Latte, so
-one fixed foreground color cannot work for both. The prompt is now a flat line
-of colored text. Terminal palettes are designed for text-on-background
-contrast, so foreground-only styling is the part that survives both modes.
+The flavor is picked in `~/.zshrc` instead. Starship runs once per prompt and
+reads `STARSHIP_CONFIG` each time, so a precmd hook can point it at a different
+file:
 
-`palette` could have been switched with `STARSHIP_CONFIG` and two files, but
-that needs a detector in the shell and only updates when a new prompt starts.
-ANSI names update on every command for free.
+```zsh
+# Starship's palette is fixed per config file, so keep a Latte copy of the
+# Mocha config and point STARSHIP_CONFIG at it while WezTerm reports light.
+starship_theme() {
+    local base="${XDG_CONFIG_HOME:-$HOME/.config}/starship.toml"
+    local light="${XDG_CACHE_HOME:-$HOME/.cache}/starship/latte.toml"
+    local appearance
+
+    [[ -r $WEZTERM_APPEARANCE_FILE && -r $base ]] || return
+    appearance=$(<$WEZTERM_APPEARANCE_FILE)
+
+    if [[ $appearance == light* ]]; then
+        if [[ ! -r $light || $base -nt $light ]]; then
+            mkdir -p "${light:h}"
+            sed "s/^palette = 'catppuccin_mocha'/palette = 'catppuccin_latte'/" "$base" >| "$light"
+        fi
+        export STARSHIP_CONFIG=$light
+    elif [[ $STARSHIP_CONFIG == $light ]]; then
+        unset STARSHIP_CONFIG
+    fi
+}
+autoload -Uz add-zsh-hook
+(( $+commands[starship] )) && add-zsh-hook precmd starship_theme
+
+```
+
+The Latte file is generated rather than kept in the repo: it is the installed
+config with the `palette` line swapped, rebuilt whenever `starship.toml` is
+newer. Reading the appearance file is one small read per prompt, cheap even
+across `/mnt/c`, while asking the Windows registry from WSL would start a
+Windows process every time. Shells outside WezTerm have no
+`WEZTERM_APPEARANCE_FILE` and keep Mocha.
+
+The trade-off is timing. A prompt already on screen keeps its colors after a
+switch; the next prompt picks up the new flavor.
 
 ## OpenCode
 
@@ -426,9 +571,10 @@ background = {
 Check that each layer parses and picks up the palette:
 
 ```sh
-wezterm show-keys >/dev/null   # config parses
-starship prompt                # colors come from the terminal palette
-opencode                       # Ctrl+P, Open settings, Theme
+wezterm show-keys >/dev/null    # config parses
+cat "$WEZTERM_APPEARANCE_FILE"  # light or dark, written by WezTerm
+starship prompt                 # Mocha, or Latte via STARSHIP_CONFIG
+opencode                        # Ctrl+P, Open settings, Theme
 ```
 
 Switch the desktop between light and dark. WezTerm should repaint immediately,
