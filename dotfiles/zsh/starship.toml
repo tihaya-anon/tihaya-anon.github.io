@@ -29,8 +29,9 @@ $line_break\
 \n\
 $character"""
 
-# zshrc swaps this line for catppuccin_latte when WezTerm reports a light
-# appearance, so keep it on a single line in exactly this form.
+# Mocha in both light and dark mode. Its pastel fills under near-black crust
+# text read well on either terminal background, while Latte's accents are
+# mid-tone text colors that leave too little contrast as fills.
 palette = 'catppuccin_mocha'
 
 [os]
@@ -155,19 +156,22 @@ format = '[[  $time ](fg:crust bg:lavender)]($style)'
 [line_break]
 disabled = true
 
+# Text outside the bar sits on the terminal background, so it uses numbered
+# ANSI colors, which WezTerm maps to Latte or Mocha with the appearance. Named
+# colors would resolve to the Mocha palette and fade on a light background.
 [character]
 disabled = false
-success_symbol = '[❯](bold fg:green)'
-error_symbol = '[❯](bold fg:red)'
-vimcmd_symbol = '[❮](bold fg:green)'
-vimcmd_replace_one_symbol = '[❮](bold fg:lavender)'
-vimcmd_replace_symbol = '[❮](bold fg:lavender)'
-vimcmd_visual_symbol = '[❮](bold fg:yellow)'
+success_symbol = '[❯](bold fg:2)'
+error_symbol = '[❯](bold fg:1)'
+vimcmd_symbol = '[❮](bold fg:2)'
+vimcmd_replace_one_symbol = '[❮](bold fg:5)'
+vimcmd_replace_symbol = '[❮](bold fg:5)'
+vimcmd_visual_symbol = '[❮](bold fg:3)'
 
 [cmd_duration]
 show_milliseconds = true
-format = " in $duration "
-style = "bg:lavender"
+format = " in [$duration]($style) "
+style = "bold fg:4"
 disabled = false
 show_notifications = true
 min_time_to_notify = 45000
@@ -199,31 +203,3 @@ surface0 = "#313244"
 base = "#1e1e2e"
 mantle = "#181825"
 crust = "#11111b"
-
-[palettes.catppuccin_latte]
-rosewater = "#dc8a78"
-flamingo = "#dd7878"
-pink = "#ea76cb"
-mauve = "#8839ef"
-red = "#d20f39"
-maroon = "#e64553"
-peach = "#fe640b"
-yellow = "#df8e1d"
-green = "#40a02b"
-teal = "#179299"
-sky = "#04a5e5"
-sapphire = "#209fb5"
-blue = "#1e66f5"
-lavender = "#7287fd"
-text = "#4c4f69"
-subtext1 = "#5c5f77"
-subtext0 = "#6c6f85"
-overlay2 = "#7c7f93"
-overlay1 = "#8c8fa1"
-overlay0 = "#9ca0b0"
-surface2 = "#acb0be"
-surface1 = "#bcc0cc"
-surface0 = "#ccd0da"
-base = "#eff1f5"
-mantle = "#e6e9ef"
-crust = "#dce0e8"

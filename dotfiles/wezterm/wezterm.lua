@@ -17,7 +17,7 @@ local is_dark = appearance():find("Dark") ~= nil
 
 config.color_scheme = is_dark and "Catppuccin Mocha" or "Catppuccin Latte"
 
--- Starship cannot see the appearance, so leave it in a file that zshrc reads
+-- Shell tools cannot see the appearance, so leave it in a file that zshrc reads
 -- before each prompt. Only the GUI knows the real value, and writing only on
 -- change keeps the reload from touching the file every time.
 local is_windows = wezterm.target_triple:find("windows") ~= nil
