@@ -72,7 +72,9 @@ config.window_padding = {
   top = 6,
   bottom = 6,
 }
-config.window_decorations = "RESIZE"
+-- Keep the system title bar for its minimize, maximize, and close buttons;
+-- "RESIZE" alone drops the bar and leaves only the resizable border.
+config.window_decorations = "TITLE | RESIZE"
 
 config.default_cursor_style = "BlinkingBar"
 config.cursor_blink_rate = 500
@@ -98,6 +100,23 @@ config.keys = {
     }),
   },
 }
+
+-- With WSL as the default, CTRL+SHIFT+O opens a launcher for the Windows
+-- shells. They name the local domain, or WezTerm would start them inside WSL.
+if is_windows then
+  local windows = { DomainName = "local" }
+
+  config.launch_menu = {
+    { label = "PowerShell", args = { "powershell.exe", "-NoLogo" }, domain = windows },
+    { label = "Command Prompt", args = { "cmd.exe" }, domain = windows },
+  }
+
+  table.insert(config.keys, {
+    key = "O",
+    mods = "CTRL|SHIFT",
+    action = wezterm.action.ShowLauncherArgs({ flags = "FUZZY|LAUNCH_MENU_ITEMS" }),
+  })
+end
 
 -- Pick up edits to this file without restarting, and pick up appearance
 -- changes without touching the file at all.

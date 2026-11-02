@@ -118,6 +118,7 @@ wezterm_config_home=$(get_wezterm_config_home)
 
 # Each line maps a file in dotfiles to its install target.
 file_map="wezterm/wezterm.lua $wezterm_config_home/wezterm/wezterm.lua
+wezterm/keys.txt $wezterm_config_home/wezterm/keys.txt
 zsh/starship.toml $config_home/starship.toml
 opencode/cli.json $config_home/opencode/cli.json"
 

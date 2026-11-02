@@ -1,0 +1,15 @@
+Tabs    Ctrl+Shift+T          new tab         Ctrl+Shift+W          close tab
+        Ctrl+Shift+E          rename tab      Ctrl+Shift+1..9       go to tab (9 = last)
+        Ctrl+Shift+O          PowerShell / cmd tab (Windows)
+        Ctrl+Tab              next tab        Ctrl+Shift+Tab        previous tab
+        Ctrl+Shift+PgUp       move tab left   Ctrl+Shift+PgDn       move tab right
+Panes   Ctrl+Shift+Alt+%      split right     Ctrl+Shift+Alt+"      split down
+        Ctrl+Shift+Arrow      focus pane      Ctrl+Shift+Alt+Arrow  resize pane
+        Ctrl+Shift+Z          zoom pane
+Text    Ctrl+Shift+C          copy            Ctrl+Shift+V          paste
+        Ctrl+Shift+F          search          Ctrl+Shift+X          copy mode
+        Ctrl+Shift+Space      quick select    Ctrl+Shift+K          clear scrollback
+        Shift+PgUp            scroll up       Shift+PgDn            scroll down
+Window  Ctrl+Shift+N          new window      Alt+Enter             full screen
+        Ctrl+= / Ctrl+-       font size       Ctrl+0                reset font size
+        Ctrl+Shift+P          command palette Ctrl+Shift+R          reload config

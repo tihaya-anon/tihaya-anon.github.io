@@ -130,6 +130,15 @@ terminal_colorfgbg() {
 }
 add-zsh-hook precmd terminal_colorfgbg
 
+# WezTerm has no key cheat sheet of its own, so print the one installed next to
+# wezterm.lua when the first shell of a tab, window, or split starts. Nested
+# shells skip it.
+if [[ $TERM_PROGRAM == WezTerm && $SHLVL -eq 1 && -n $WEZTERM_APPEARANCE_FILE ]]; then
+    wezterm_keys="${WEZTERM_APPEARANCE_FILE:h}/keys.txt"
+    [[ -r $wezterm_keys ]] && print -r -- "$(<$wezterm_keys)"
+    unset wezterm_keys
+fi
+
 # Plugins are cloned by the installer. Syntax highlighting must load last.
 zsh_plugins="${XDG_DATA_HOME:-$HOME/.local/share}/zsh/plugins"
 [[ -r "$zsh_plugins/zsh-autosuggestions/zsh-autosuggestions.zsh" ]] &&

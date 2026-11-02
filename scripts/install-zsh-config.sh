@@ -150,6 +150,7 @@ zsh/zshrc $HOME/.zshrc
 zsh/zsh_aliases $HOME/.zsh_aliases
 zsh/starship.toml $config_home/starship.toml
 wezterm/wezterm.lua $wezterm_config_home/wezterm/wezterm.lua
+wezterm/keys.txt $wezterm_config_home/wezterm/keys.txt
 opencode/cli.json $config_home/opencode/cli.json"
 
 plugins="zsh-autosuggestions zsh-syntax-highlighting"
