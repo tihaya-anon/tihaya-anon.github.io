@@ -198,6 +198,14 @@ config.tab_max_width = 28
 -- a title; an empty line clears it so the tab follows the running program
 -- again, and Escape cancels without changing anything.
 config.keys = {
+  -- The default CTRL+SHIFT+T opens the new tab in the current pane's domain,
+  -- so a tab opened from PowerShell would start cmd instead of WSL. Always use
+  -- the default domain instead.
+  {
+    key = "T",
+    mods = "CTRL|SHIFT",
+    action = wezterm.action.SpawnTab("DefaultDomain"),
+  },
   {
     key = "E",
     mods = "CTRL|SHIFT",
@@ -227,6 +235,35 @@ if is_windows then
     mods = "CTRL|SHIFT",
     action = wezterm.action.ShowLauncherArgs({ flags = "FUZZY|LAUNCH_MENU_ITEMS" }),
   })
+
+  -- A split stays in the current pane's domain, and the local domain starts
+  -- cmd by default, so splitting PowerShell would give cmd. Split a Windows
+  -- pane with the shell it runs instead: cmd for cmd, PowerShell otherwise.
+  -- WSL panes keep the default.
+  local function split(direction)
+    return wezterm.action_callback(function(window, pane)
+      local command = { domain = "CurrentPaneDomain" }
+
+      if pane:get_domain_name() == "local" then
+        local process = (pane:get_foreground_process_name() or ""):lower()
+        command.args = process:find("cmd%.exe$") and { "cmd.exe" } or { "powershell.exe", "-NoLogo" }
+      end
+
+      window:perform_action(wezterm.action.SplitPane({ direction = direction, command = command }), pane)
+    end)
+  end
+
+  -- Replace every variant of the default split bindings.
+  for _, binding in ipairs({
+    { key = '"', mods = "CTRL|ALT", direction = "Down" },
+    { key = '"', mods = "CTRL|SHIFT|ALT", direction = "Down" },
+    { key = "'", mods = "CTRL|SHIFT|ALT", direction = "Down" },
+    { key = "%", mods = "CTRL|ALT", direction = "Right" },
+    { key = "%", mods = "CTRL|SHIFT|ALT", direction = "Right" },
+    { key = "5", mods = "CTRL|SHIFT|ALT", direction = "Right" },
+  }) do
+    table.insert(config.keys, { key = binding.key, mods = binding.mods, action = split(binding.direction) })
+  end
 end
 
 -- Pick up edits to this file without restarting, and pick up appearance
@@ -266,6 +303,18 @@ PowerShell and cmd stay one key away. `Ctrl+Shift+O` opens a fuzzy launcher
 over `launch_menu`, whose entries name the `local` domain. Without that, an
 entry would spawn in the default domain and run inside WSL.
 
+The built-in `Ctrl+Shift+T` spawns into the current pane's domain, so a new
+tab opened from a PowerShell tab would start cmd. The config rebinds it to
+`SpawnTab("DefaultDomain")`, which always opens WSL.
+
+Splits have the same problem in reverse. A split should stay in the pane's
+domain, but the local domain's default program is cmd, so splitting a
+PowerShell pane gave cmd. On Windows the split keys run a callback instead: in
+a local pane it checks the foreground process and splits with cmd for cmd and
+PowerShell for anything else, while WSL panes split as before. WezTerm binds
+each split to several key variants, so the config replaces all six; `wezterm
+show-keys` should list no `SplitVertical` or `SplitHorizontal` left.
+
 The font is the CN build of Maple Mono NF, which carries the code, prompt, and
 Chinese glyphs in one family, so no fallback chain is needed.
 
@@ -277,23 +326,54 @@ shows once a second tab is open.
 
 WezTerm has no built-in cheat sheet short of `wezterm show-keys`, which dumps
 every binding. `dotfiles/wezterm/keys.txt` is a hand-kept list of the common
-ones, installed next to `wezterm.lua`. `~/.zshrc` prints it when the first
-shell of a new tab, window, or split starts, finding it through the directory
-of `WEZTERM_APPEARANCE_FILE`, so the same lookup works on Linux and under WSL:
+ones, installed next to `wezterm.lua`. Each `[Group]` header starts a section
+and each `action = keys` line is one binding:
+
+```text
+[Tabs]
+new tab = Ctrl+Shift+T
+close tab = Ctrl+Shift+W
+```
+
+A plain dump of such a list is tiring to read, because actions and keys look
+alike. The `wezkeys` function in `~/.zshrc` lays it out two bindings per row,
+with the group in magenta, the action in the default color, and the key in bold
+blue. Those are ANSI colors, so they follow the Latte or Mocha palette. It runs
+when the first shell of a new tab, window, or split starts, and finds the file
+through the directory of `WEZTERM_APPEARANCE_FILE`, so the same lookup works on
+Linux and under WSL:
 
 ```zsh
-# WezTerm has no key cheat sheet of its own, so print the one installed next to
-# wezterm.lua when the first shell of a tab, window, or split starts. Nested
-# shells skip it.
-if [[ $TERM_PROGRAM == WezTerm && $SHLVL -eq 1 && -n $WEZTERM_APPEARANCE_FILE ]]; then
-    wezterm_keys="${WEZTERM_APPEARANCE_FILE:h}/keys.txt"
-    [[ -r $wezterm_keys ]] && print -r -- "$(<$wezterm_keys)"
-    unset wezterm_keys
-fi
+# WezTerm has no key cheat sheet of its own, so render the one installed next to
+# wezterm.lua: two bindings per row, actions in the default color and keys in
+# bold blue, so the eye can tell them apart without reading.
+wezkeys() {
+    local sheet="${WEZTERM_APPEARANCE_FILE:h}/keys.txt"
+
+    [[ -n $WEZTERM_APPEARANCE_FILE && -r $sheet ]] || return
+    awk '
+        BEGIN { group = "\033[1;35m"; key = "\033[1;34m"; off = "\033[0m" }
+        function end_row() { if (n % 2) printf "\n"; n = 0 }
+        /^#/ || /^[[:space:]]*$/ { next }
+        /^\[/ { end_row(); gsub(/\[|\]/, ""); label = $0; next }
+        {
+            split($0, part, / = /)
+            if (n % 2 == 0) { printf "%s%-8s%s", group, label, off; label = "" }
+            printf "%-18s%s%-22s%s", part[1], key, part[2], off
+            if (++n % 2 == 0) printf "\n"
+        }
+        END { end_row() }
+    ' "$sheet"
+}
+
+# Print it when the first shell of a tab, window, or split starts. Nested
+# shells skip it; run `wezkeys` to see it again.
+[[ $TERM_PROGRAM == WezTerm && $SHLVL -eq 1 ]] && wezkeys
 ```
 
 The list is not generated from the config, so a new binding in `config.keys`
-needs a matching line in `keys.txt`.
+needs a matching line in `keys.txt`. `wezterm show-keys` is the check: every
+key in the sheet should appear there with the expected action.
 
 ## Starship
 
