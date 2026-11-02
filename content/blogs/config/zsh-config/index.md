@@ -31,7 +31,7 @@ The script downloads the repo archive and then:
 1. copies `dotfiles/zsh` to `~/.zshenv`, `~/.zprofile`, `~/.zshrc`,
    `~/.zsh_aliases`, and `${XDG_CONFIG_HOME:-$HOME/.config}/starship.toml`,
    plus the [WezTerm and OpenCode theme configs](/blogs/config/system-theme/)
-   (under WSL, `wezterm.lua` goes to the Windows profile instead), moving any different existing file to a timestamped backup first;
+   (under WSL, `wezterm.lua` and `keys.txt` go to the Windows profile instead), moving any different existing file to a timestamped backup first;
 2. creates `~/.zsh_env` if it is missing and restricts it to mode `600`;
 3. clones the two plugins into `${XDG_DATA_HOME:-$HOME/.local/share}/zsh/plugins`,
    or fast-forwards them when they are already there;
@@ -297,6 +297,15 @@ terminal_colorfgbg() {
     fi
 }
 add-zsh-hook precmd terminal_colorfgbg
+
+# WezTerm has no key cheat sheet of its own, so print the one installed next to
+# wezterm.lua when the first shell of a tab, window, or split starts. Nested
+# shells skip it.
+if [[ $TERM_PROGRAM == WezTerm && $SHLVL -eq 1 && -n $WEZTERM_APPEARANCE_FILE ]]; then
+    wezterm_keys="${WEZTERM_APPEARANCE_FILE:h}/keys.txt"
+    [[ -r $wezterm_keys ]] && print -r -- "$(<$wezterm_keys)"
+    unset wezterm_keys
+fi
 
 # Plugins are cloned by the installer. Syntax highlighting must load last.
 zsh_plugins="${XDG_DATA_HOME:-$HOME/.local/share}/zsh/plugins"

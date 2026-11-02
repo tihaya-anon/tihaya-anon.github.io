@@ -29,13 +29,14 @@ timestamped backup first:
 
 ```text
 dotfiles/wezterm/wezterm.lua  -> ~/.config/wezterm/wezterm.lua
+dotfiles/wezterm/keys.txt     -> ~/.config/wezterm/keys.txt
 dotfiles/zsh/starship.toml    -> ~/.config/starship.toml
 dotfiles/opencode/cli.json    -> ~/.config/opencode/cli.json
 ```
 
 Under WSL the terminal is the Windows build of WezTerm, which never reads the
 Linux home. Both installers detect WSL, ask `cmd.exe` for `%USERPROFILE%`, and
-write `wezterm.lua` to `%USERPROFILE%\.config\wezterm\wezterm.lua` instead.
+write `wezterm.lua` and `keys.txt` to `%USERPROFILE%\.config\wezterm\` instead.
 
 Check the plan without changing anything:
 
@@ -52,7 +53,7 @@ sh scripts/install-theme-config.sh
 ```
 
 The [Zsh installer](/blogs/config/zsh-config/#install-on-a-new-machine) writes
-the same three theme files and also handles `~/.zshrc`, which holds the
+the same theme files and also handles `~/.zshrc`, which holds the
 Starship and Claude Code appearance hooks, `~/.zprofile`, and the
 plugins. Running either script is enough; run both and the second one reports
 the shared files as up to date.
@@ -177,7 +178,9 @@ config.window_padding = {
   top = 6,
   bottom = 6,
 }
-config.window_decorations = "RESIZE"
+-- Keep the system title bar for its minimize, maximize, and close buttons;
+-- "RESIZE" alone drops the bar and leaves only the resizable border.
+config.window_decorations = "TITLE | RESIZE"
 
 config.default_cursor_style = "BlinkingBar"
 config.cursor_blink_rate = 500
@@ -203,6 +206,23 @@ config.keys = {
     }),
   },
 }
+
+-- With WSL as the default, CTRL+SHIFT+O opens a launcher for the Windows
+-- shells. They name the local domain, or WezTerm would start them inside WSL.
+if is_windows then
+  local windows = { DomainName = "local" }
+
+  config.launch_menu = {
+    { label = "PowerShell", args = { "powershell.exe", "-NoLogo" }, domain = windows },
+    { label = "Command Prompt", args = { "cmd.exe" }, domain = windows },
+  }
+
+  table.insert(config.keys, {
+    key = "O",
+    mods = "CTRL|SHIFT",
+    action = wezterm.action.ShowLauncherArgs({ flags = "FUZZY|LAUNCH_MENU_ITEMS" }),
+  })
+end
 
 -- Pick up edits to this file without restarting, and pick up appearance
 -- changes without touching the file at all.
@@ -237,6 +257,10 @@ distro, and the config takes the first one. With several distros installed,
 name the one you want instead, for example
 `config.default_domain = "WSL:Ubuntu"`. Other platforms skip the block.
 
+PowerShell and cmd stay one key away. `Ctrl+Shift+O` opens a fuzzy launcher
+over `launch_menu`, whose entries name the `local` domain. Without that, an
+entry would spawn in the default domain and run inside WSL.
+
 The font is the CN build of Maple Mono NF, which carries the code, prompt, and
 Chinese glyphs in one family, so no fallback chain is needed.
 
@@ -245,6 +269,26 @@ box but has no binding to rename one, so `Ctrl+Shift+E` asks for a title and
 sets it with `tab:set_title()`. Submitting an empty title resets the tab to the
 running program's name. With `hide_tab_bar_if_only_one_tab`, the title only
 shows once a second tab is open.
+
+WezTerm has no built-in cheat sheet short of `wezterm show-keys`, which dumps
+every binding. `dotfiles/wezterm/keys.txt` is a hand-kept list of the common
+ones, installed next to `wezterm.lua`. `~/.zshrc` prints it when the first
+shell of a new tab, window, or split starts, finding it through the directory
+of `WEZTERM_APPEARANCE_FILE`, so the same lookup works on Linux and under WSL:
+
+```zsh
+# WezTerm has no key cheat sheet of its own, so print the one installed next to
+# wezterm.lua when the first shell of a tab, window, or split starts. Nested
+# shells skip it.
+if [[ $TERM_PROGRAM == WezTerm && $SHLVL -eq 1 && -n $WEZTERM_APPEARANCE_FILE ]]; then
+    wezterm_keys="${WEZTERM_APPEARANCE_FILE:h}/keys.txt"
+    [[ -r $wezterm_keys ]] && print -r -- "$(<$wezterm_keys)"
+    unset wezterm_keys
+fi
+```
+
+The list is not generated from the config, so a new binding in `config.keys`
+needs a matching line in `keys.txt`.
 
 ## Starship
 
