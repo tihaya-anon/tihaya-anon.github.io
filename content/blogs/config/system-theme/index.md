@@ -366,9 +366,11 @@ wezkeys() {
     ' "$sheet"
 }
 
-# Print it when the first shell of a tab, window, or split starts. Nested
-# shells skip it; run `wezkeys` to see it again.
-[[ $TERM_PROGRAM == WezTerm && $SHLVL -eq 1 ]] && wezkeys
+# Print it when the first shell of a tab, window, or split starts, with a dim
+# hint that `wezkeys` shows it again. Nested shells skip both.
+if [[ $TERM_PROGRAM == WezTerm && $SHLVL -eq 1 ]] && wezkeys; then
+    print -r -- $'        \e[2mrun `wezkeys` to show this again\e[0m'
+fi
 ```
 
 The list is not generated from the config, so a new binding in `config.keys`
