@@ -50,6 +50,17 @@ config.set_environment_variables = {
   WSLENV = "TERM:COLORTERM:TERM_PROGRAM:TERM_PROGRAM_VERSION:WEZTERM_APPEARANCE_FILE/p",
 }
 
+-- On Windows, open new windows and tabs in WSL instead of PowerShell.
+-- WezTerm builds one WSL:<distro> domain per installed distro; use the first
+-- one it finds. The domain starts in the Linux home.
+if is_windows then
+  local wsl_domains = wezterm.default_wsl_domains()
+
+  if #wsl_domains > 0 then
+    config.default_domain = wsl_domains[1].name
+  end
+end
+
 -- The CN build of Maple Mono NF carries the CJK glyphs itself.
 config.font = wezterm.font("Maple Mono NF CN")
 config.font_size = 12.0
@@ -69,6 +80,24 @@ config.cursor_blink_rate = 500
 config.use_fancy_tab_bar = false
 config.hide_tab_bar_if_only_one_tab = true
 config.tab_max_width = 28
+
+-- WezTerm has no default binding for renaming a tab. CTRL+SHIFT+E prompts for
+-- a title; an empty line clears it so the tab follows the running program
+-- again, and Escape cancels without changing anything.
+config.keys = {
+  {
+    key = "E",
+    mods = "CTRL|SHIFT",
+    action = wezterm.action.PromptInputLine({
+      description = "Rename tab (empty to reset)",
+      action = wezterm.action_callback(function(window, _, line)
+        if line then
+          window:active_tab():set_title(line)
+        end
+      end),
+    }),
+  },
+}
 
 -- Pick up edits to this file without restarting, and pick up appearance
 -- changes without touching the file at all.
