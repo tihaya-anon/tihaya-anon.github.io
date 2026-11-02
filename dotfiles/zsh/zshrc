@@ -93,6 +93,29 @@ export SDKMAN_DIR="$HOME/.sdkman"
 # Starship owns the prompt and shows the vi mode through its character module.
 (( $+commands[starship] )) && eval "$(starship init zsh)"
 
+# Starship's palette is fixed per config file, so keep a Latte copy of the
+# Mocha config and point STARSHIP_CONFIG at it while WezTerm reports light.
+starship_theme() {
+    local base="${XDG_CONFIG_HOME:-$HOME/.config}/starship.toml"
+    local light="${XDG_CACHE_HOME:-$HOME/.cache}/starship/latte.toml"
+    local appearance
+
+    [[ -r $WEZTERM_APPEARANCE_FILE && -r $base ]] || return
+    appearance=$(<$WEZTERM_APPEARANCE_FILE)
+
+    if [[ $appearance == light* ]]; then
+        if [[ ! -r $light || $base -nt $light ]]; then
+            mkdir -p "${light:h}"
+            sed "s/^palette = 'catppuccin_mocha'/palette = 'catppuccin_latte'/" "$base" >| "$light"
+        fi
+        export STARSHIP_CONFIG=$light
+    elif [[ $STARSHIP_CONFIG == $light ]]; then
+        unset STARSHIP_CONFIG
+    fi
+}
+autoload -Uz add-zsh-hook
+(( $+commands[starship] )) && add-zsh-hook precmd starship_theme
+
 # Plugins are cloned by the installer. Syntax highlighting must load last.
 zsh_plugins="${XDG_DATA_HOME:-$HOME/.local/share}/zsh/plugins"
 [[ -r "$zsh_plugins/zsh-autosuggestions/zsh-autosuggestions.zsh" ]] &&

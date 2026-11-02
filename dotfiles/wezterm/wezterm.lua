@@ -17,10 +17,41 @@ local is_dark = appearance():find("Dark") ~= nil
 
 config.color_scheme = is_dark and "Catppuccin Mocha" or "Catppuccin Latte"
 
-config.font = wezterm.font_with_fallback({
-  "Maple Mono NF",
-  "Noto Sans Mono CJK SC",
-})
+-- Starship cannot see the appearance, so leave it in a file that zshrc reads
+-- before each prompt. Only the GUI knows the real value, and writing only on
+-- change keeps the reload from touching the file every time.
+local is_windows = wezterm.target_triple:find("windows") ~= nil
+local separator = is_windows and "\\" or "/"
+local appearance_file = wezterm.config_dir .. separator .. "appearance"
+
+if wezterm.gui then
+  local value = is_dark and "dark" or "light"
+  local current = io.open(appearance_file, "r")
+  local previous = current and current:read("*l")
+
+  if current then
+    current:close()
+  end
+
+  if previous ~= value then
+    local file = io.open(appearance_file, "w")
+
+    if file then
+      file:write(value, "\n")
+      file:close()
+    end
+  end
+end
+
+-- WSL only inherits the variables named in WSLENV; /p converts the Windows
+-- path to its /mnt form on the way in.
+config.set_environment_variables = {
+  WEZTERM_APPEARANCE_FILE = appearance_file,
+  WSLENV = "TERM:COLORTERM:TERM_PROGRAM:TERM_PROGRAM_VERSION:WEZTERM_APPEARANCE_FILE/p",
+}
+
+-- The CN build of Maple Mono NF carries the CJK glyphs itself.
+config.font = wezterm.font("Maple Mono NF CN")
 config.font_size = 12.0
 config.line_height = 1.1
 
