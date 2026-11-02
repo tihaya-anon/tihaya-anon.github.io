@@ -130,14 +130,31 @@ terminal_colorfgbg() {
 }
 add-zsh-hook precmd terminal_colorfgbg
 
-# WezTerm has no key cheat sheet of its own, so print the one installed next to
-# wezterm.lua when the first shell of a tab, window, or split starts. Nested
-# shells skip it.
-if [[ $TERM_PROGRAM == WezTerm && $SHLVL -eq 1 && -n $WEZTERM_APPEARANCE_FILE ]]; then
-    wezterm_keys="${WEZTERM_APPEARANCE_FILE:h}/keys.txt"
-    [[ -r $wezterm_keys ]] && print -r -- "$(<$wezterm_keys)"
-    unset wezterm_keys
-fi
+# WezTerm has no key cheat sheet of its own, so render the one installed next to
+# wezterm.lua: two bindings per row, actions in the default color and keys in
+# bold blue, so the eye can tell them apart without reading.
+wezkeys() {
+    local sheet="${WEZTERM_APPEARANCE_FILE:h}/keys.txt"
+
+    [[ -n $WEZTERM_APPEARANCE_FILE && -r $sheet ]] || return
+    awk '
+        BEGIN { group = "\033[1;35m"; key = "\033[1;34m"; off = "\033[0m" }
+        function end_row() { if (n % 2) printf "\n"; n = 0 }
+        /^#/ || /^[[:space:]]*$/ { next }
+        /^\[/ { end_row(); gsub(/\[|\]/, ""); label = $0; next }
+        {
+            split($0, part, / = /)
+            if (n % 2 == 0) { printf "%s%-8s%s", group, label, off; label = "" }
+            printf "%-18s%s%-22s%s", part[1], key, part[2], off
+            if (++n % 2 == 0) printf "\n"
+        }
+        END { end_row() }
+    ' "$sheet"
+}
+
+# Print it when the first shell of a tab, window, or split starts. Nested
+# shells skip it; run `wezkeys` to see it again.
+[[ $TERM_PROGRAM == WezTerm && $SHLVL -eq 1 ]] && wezkeys
 
 # Plugins are cloned by the installer. Syntax highlighting must load last.
 zsh_plugins="${XDG_DATA_HOME:-$HOME/.local/share}/zsh/plugins"
