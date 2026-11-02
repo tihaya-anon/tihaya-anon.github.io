@@ -116,6 +116,20 @@ starship_theme() {
 autoload -Uz add-zsh-hook
 (( $+commands[starship] )) && add-zsh-hook precmd starship_theme
 
+# Claude Code's auto theme asks the terminal for its background color and falls
+# back to COLORFGBG when nothing answers, as can happen under WSL. Background
+# 15 reads as light, 0 as dark.
+terminal_colorfgbg() {
+    [[ -r $WEZTERM_APPEARANCE_FILE ]] || return
+
+    if [[ $(<$WEZTERM_APPEARANCE_FILE) == light* ]]; then
+        export COLORFGBG='0;15'
+    else
+        export COLORFGBG='15;0'
+    fi
+}
+add-zsh-hook precmd terminal_colorfgbg
+
 # Plugins are cloned by the installer. Syntax highlighting must load last.
 zsh_plugins="${XDG_DATA_HOME:-$HOME/.local/share}/zsh/plugins"
 [[ -r "$zsh_plugins/zsh-autosuggestions/zsh-autosuggestions.zsh" ]] &&
