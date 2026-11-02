@@ -11,8 +11,8 @@ tags: ["wezterm", "starship", "opencode", "claude-code", "neovim", "terminal", "
 A dark terminal in a light desktop is a flash of glare every time the window
 changes focus. This setup makes the terminal own the palette instead of
 teaching every tool to read the desktop on its own: WezTerm follows the system
-appearance and hands it on to Starship and Claude Code, OpenCode inherits its
-palette, and Neovim checks the OS directly because a full-screen application cannot see the
+appearance and hands it on to Claude Code, OpenCode and the Starship prompt
+inherit its palette, and Neovim checks the OS directly because a full-screen application cannot see the
 terminal palette.
 
 ## Install on a new machine
@@ -59,7 +59,7 @@ sh scripts/install-theme-config.sh
 
 The [Zsh installer](/blogs/config/zsh-config/#install-on-a-new-machine) writes
 the same theme files and also handles `~/.zshrc`, which holds the
-Starship and Claude Code appearance hooks, `~/.zprofile`, and the
+Claude Code appearance hook, `~/.zprofile`, and the
 plugins. Running either script is enough; run both and the second one reports
 the shared files as up to date.
 
@@ -73,14 +73,15 @@ This is the current setup:
 | Layer       | Appearance source                          | How it switches                            |
 | ----------- | ------------------------------------------ | ------------------------------------------ |
 | WezTerm     | Desktop appearance API                     | Reloads the config when the system changes |
-| Starship    | Appearance file written by WezTerm         | Picks Mocha or Latte before each prompt    |
+| Starship    | Mocha bar, ANSI colors outside it          | Bar stays; prompt symbols follow WezTerm   |
 | OpenCode    | Terminal palette and appearance            | Follows the terminal while the TUI runs    |
 | Claude Code | Terminal background, else `COLORFGBG`      | Checks when a session starts               |
 | Neovim      | OS settings, not the terminal              | Refreshes on focus and resume              |
 
-The terminal is the only place that needs a desktop-specific check. Starship
-and the `COLORFGBG` fallback read the result from a file WezTerm leaves behind,
-and OpenCode reads the terminal's reported appearance.
+The terminal is the only place that needs a desktop-specific check. The
+`COLORFGBG` fallback reads the result from a file WezTerm leaves behind,
+OpenCode reads the terminal's reported appearance, and Starship's few
+unfilled colors come straight from the terminal palette.
 
 {{< mermaid >}}
 flowchart TB
@@ -88,10 +89,10 @@ flowchart TB
     B --> C["Catppuccin Latte or Mocha color scheme"]
     B --> D["appearance file"]
     D --> E["zsh precmd hook"]
-    E --> F["Starship Latte or Mocha palette"]
     E --> J["COLORFGBG"]
     J --> K["Claude Code light or dark theme"]
     C --> G["OpenCode TUI"]
+    C --> F["Starship prompt symbols"]
     A --> H["Neovim system theme helper"]
     H --> I["Catppuccin Latte or Mocha"]
 {{< /mermaid >}}
@@ -128,7 +129,7 @@ local is_dark = appearance():find("Dark") ~= nil
 
 config.color_scheme = is_dark and "Catppuccin Mocha" or "Catppuccin Latte"
 
--- Starship cannot see the appearance, so leave it in a file that zshrc reads
+-- Shell tools cannot see the appearance, so leave it in a file that zshrc reads
 -- before each prompt. Only the GUI knows the real value, and writing only on
 -- change keeps the reload from touching the file every time.
 local is_windows = wezterm.target_triple:find("windows") ~= nil
@@ -379,11 +380,32 @@ key in the sheet should appear there with the expected action.
 
 ## Starship
 
-Starship has no desktop appearance API and no automatic palette switching. Its
-`palette` option is a plain name, and environment variables are not expanded
-inside the config file. The config therefore keeps Catppuccin's own powerline
-design, filled segments drawn from the Mocha palette, and defines the Latte
-palette beside it:
+Starship stays on Mocha in both modes. An earlier version switched it to Latte
+with the desktop, through a precmd hook that pointed `STARSHIP_CONFIG` at a
+generated Latte copy. The palette values were Catppuccin's own, but the result
+was hard to read in daylight. Latte's accents are mid-tone colors designed as
+text on a light background, not as fills, so the filled bar had too little
+contrast with either light or dark text on top:
+
+| Segment  | Latte fill, `crust` text | Latte fill, `text` text | Mocha fill, `crust` text |
+| -------- | -----------------------: | ----------------------: | -----------------------: |
+| red      |                     4.10 |                    1.47 |                     8.10 |
+| peach    |                     2.25 |                    2.68 |                    10.59 |
+| yellow   |                     1.98 |                    3.05 |                    14.76 |
+| green    |                     2.53 |                    2.39 |                    12.61 |
+| sapphire |                     2.37 |                    2.54 |                     9.93 |
+| lavender |                     2.40 |                    2.51 |                    10.48 |
+
+Those are WCAG contrast ratios, where 4.5 is the usual floor for text. Mocha's
+pastel fills under its near-black `crust` clear it by a wide margin, and they
+still stand out against a light terminal background, so one palette serves
+both modes and the switching hook is gone.
+
+Text outside the bar is different: it sits on the terminal background, which
+does change. The prompt character and the command duration therefore use
+numbered ANSI colors such as `fg:2`, which WezTerm maps to Latte or Mocha with
+the rest of its palette. A named color like `green` would resolve to the Mocha
+palette and fade on a light background.
 
 ```toml
 "$schema" = 'https://starship.rs/config-schema.json'
@@ -417,8 +439,9 @@ $line_break\
 \n\
 $character"""
 
-# zshrc swaps this line for catppuccin_latte when WezTerm reports a light
-# appearance, so keep it on a single line in exactly this form.
+# Mocha in both light and dark mode. Its pastel fills under near-black crust
+# text read well on either terminal background, while Latte's accents are
+# mid-tone text colors that leave too little contrast as fills.
 palette = 'catppuccin_mocha'
 
 [os]
@@ -543,19 +566,22 @@ format = '[[  $time ](fg:crust bg:lavender)]($style)'
 [line_break]
 disabled = true
 
+# Text outside the bar sits on the terminal background, so it uses numbered
+# ANSI colors, which WezTerm maps to Latte or Mocha with the appearance. Named
+# colors would resolve to the Mocha palette and fade on a light background.
 [character]
 disabled = false
-success_symbol = '[❯](bold fg:green)'
-error_symbol = '[❯](bold fg:red)'
-vimcmd_symbol = '[❮](bold fg:green)'
-vimcmd_replace_one_symbol = '[❮](bold fg:lavender)'
-vimcmd_replace_symbol = '[❮](bold fg:lavender)'
-vimcmd_visual_symbol = '[❮](bold fg:yellow)'
+success_symbol = '[❯](bold fg:2)'
+error_symbol = '[❯](bold fg:1)'
+vimcmd_symbol = '[❮](bold fg:2)'
+vimcmd_replace_one_symbol = '[❮](bold fg:5)'
+vimcmd_replace_symbol = '[❮](bold fg:5)'
+vimcmd_visual_symbol = '[❮](bold fg:3)'
 
 [cmd_duration]
 show_milliseconds = true
-format = " in $duration "
-style = "bg:lavender"
+format = " in [$duration]($style) "
+style = "bold fg:4"
 disabled = false
 show_notifications = true
 min_time_to_notify = 45000
@@ -587,34 +613,6 @@ surface0 = "#313244"
 base = "#1e1e2e"
 mantle = "#181825"
 crust = "#11111b"
-
-[palettes.catppuccin_latte]
-rosewater = "#dc8a78"
-flamingo = "#dd7878"
-pink = "#ea76cb"
-mauve = "#8839ef"
-red = "#d20f39"
-maroon = "#e64553"
-peach = "#fe640b"
-yellow = "#df8e1d"
-green = "#40a02b"
-teal = "#179299"
-sky = "#04a5e5"
-sapphire = "#209fb5"
-blue = "#1e66f5"
-lavender = "#7287fd"
-text = "#4c4f69"
-subtext1 = "#5c5f77"
-subtext0 = "#6c6f85"
-overlay2 = "#7c7f93"
-overlay1 = "#8c8fa1"
-overlay0 = "#9ca0b0"
-surface2 = "#acb0be"
-surface1 = "#bcc0cc"
-surface0 = "#ccd0da"
-base = "#eff1f5"
-mantle = "#e6e9ef"
-crust = "#dce0e8"
 ```
 
 One setting in that file is not about color. Starship reads repository state
@@ -625,52 +623,6 @@ clean while the prompt showed a `?`. Setting `use_git_executable = true` makes
 Starship ask git itself, which brings the prompt back in line with `git status`.
 It costs one git process per prompt, which is a fair trade for a status line
 that means what the command says.
-
-Each segment pairs a palette background with `crust` text, the pairing
-Catppuccin designs for each flavor, so the bar keeps its contrast in both. An
-earlier version used ANSI color names to let WezTerm's palette carry the switch
-for free. That had to give up the filled bar, though: the same ANSI `red` is
-light in Mocha and dark in Latte, so no single text color reads on top of both.
-
-The flavor is picked in `~/.zshrc` instead. Starship runs once per prompt and
-reads `STARSHIP_CONFIG` each time, so a precmd hook can point it at a different
-file:
-
-```zsh
-# Starship's palette is fixed per config file, so keep a Latte copy of the
-# Mocha config and point STARSHIP_CONFIG at it while WezTerm reports light.
-starship_theme() {
-    local base="${XDG_CONFIG_HOME:-$HOME/.config}/starship.toml"
-    local light="${XDG_CACHE_HOME:-$HOME/.cache}/starship/latte.toml"
-    local appearance
-
-    [[ -r $WEZTERM_APPEARANCE_FILE && -r $base ]] || return
-    appearance=$(<$WEZTERM_APPEARANCE_FILE)
-
-    if [[ $appearance == light* ]]; then
-        if [[ ! -r $light || $base -nt $light ]]; then
-            mkdir -p "${light:h}"
-            sed "s/^palette = 'catppuccin_mocha'/palette = 'catppuccin_latte'/" "$base" >| "$light"
-        fi
-        export STARSHIP_CONFIG=$light
-    elif [[ $STARSHIP_CONFIG == $light ]]; then
-        unset STARSHIP_CONFIG
-    fi
-}
-autoload -Uz add-zsh-hook
-(( $+commands[starship] )) && add-zsh-hook precmd starship_theme
-
-```
-
-The Latte file is generated rather than kept in the repo: it is the installed
-config with the `palette` line swapped, rebuilt whenever `starship.toml` is
-newer. Reading the appearance file is one small read per prompt, cheap even
-across `/mnt/c`, while asking the Windows registry from WSL would start a
-Windows process every time. Shells outside WezTerm have no
-`WEZTERM_APPEARANCE_FILE` and keep Mocha.
-
-The trade-off is timing. A prompt already on screen keeps its colors after a
-switch; the next prompt picks up the new flavor.
 
 ## OpenCode
 
@@ -742,7 +694,7 @@ without that to dark. Under WSL the query can go unanswered, so a light
 WezTerm still got dark diffs. `COLORFGBG` is an old convention of
 `foreground;background` color indexes, where a background of 0 to 6 or 8 means
 dark and anything else up to 15 means light. A precmd hook in `~/.zshrc`
-derives it from the same appearance file Starship reads:
+derives it from the appearance file:
 
 ```zsh
 # Claude Code's auto theme asks the terminal for its background color and falls
@@ -792,11 +744,11 @@ Check that each layer parses and picks up the palette:
 ```sh
 wezterm show-keys >/dev/null    # config parses
 cat "$WEZTERM_APPEARANCE_FILE"  # light or dark, written by WezTerm
-starship prompt                 # Mocha, or Latte via STARSHIP_CONFIG
+starship prompt                 # Mocha bar in both modes
 opencode                        # Ctrl+P, Open settings, Theme
 echo "$COLORFGBG"               # 0;15 in light, 15;0 in dark
 ```
 
 Switch the desktop between light and dark. WezTerm should repaint immediately,
-Starship on the next command, OpenCode while it is open, Claude Code in the
+the Starship prompt symbols with it, OpenCode while it is open, Claude Code in the
 next session, and Neovim when it regains focus.

@@ -265,28 +265,7 @@ export SDKMAN_DIR="$HOME/.sdkman"
 # Starship owns the prompt and shows the vi mode through its character module.
 (( $+commands[starship] )) && eval "$(starship init zsh)"
 
-# Starship's palette is fixed per config file, so keep a Latte copy of the
-# Mocha config and point STARSHIP_CONFIG at it while WezTerm reports light.
-starship_theme() {
-    local base="${XDG_CONFIG_HOME:-$HOME/.config}/starship.toml"
-    local light="${XDG_CACHE_HOME:-$HOME/.cache}/starship/latte.toml"
-    local appearance
-
-    [[ -r $WEZTERM_APPEARANCE_FILE && -r $base ]] || return
-    appearance=$(<$WEZTERM_APPEARANCE_FILE)
-
-    if [[ $appearance == light* ]]; then
-        if [[ ! -r $light || $base -nt $light ]]; then
-            mkdir -p "${light:h}"
-            sed "s/^palette = 'catppuccin_mocha'/palette = 'catppuccin_latte'/" "$base" >| "$light"
-        fi
-        export STARSHIP_CONFIG=$light
-    elif [[ $STARSHIP_CONFIG == $light ]]; then
-        unset STARSHIP_CONFIG
-    fi
-}
 autoload -Uz add-zsh-hook
-(( $+commands[starship] )) && add-zsh-hook precmd starship_theme
 
 # Claude Code's auto theme asks the terminal for its background color and falls
 # back to COLORFGBG when nothing answers, as can happen under WSL. Background
@@ -453,11 +432,11 @@ alias tg='terragrunt'
 
 `.zshrc` starts Starship when it is installed, but the prompt design lives in a
 separate file. The config draws a Catppuccin powerline bar from the Mocha
-palette, and the `starship_theme` precmd hook swaps in a Latte copy whenever
-WezTerm reports a light appearance. The full file and the reasoning are in
+palette in both light and dark mode, and colors the prompt character with ANSI
+colors so it follows WezTerm. The full file and the reasoning are in
 [Theme-aware Terminal](/blogs/config/system-theme/#starship). The
-`terminal_colorfgbg` hook reads the same file for Claude Code, as described in
-[the Claude Code section](/blogs/config/system-theme/#claude-code).
+`terminal_colorfgbg` hook reads WezTerm's appearance file for Claude Code, as
+described in [the Claude Code section](/blogs/config/system-theme/#claude-code).
 
 The installer copies `dotfiles/zsh/starship.toml` to
 `${XDG_CONFIG_HOME:-$HOME/.config}/starship.toml` together with the shell
