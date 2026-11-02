@@ -120,6 +120,27 @@ if [ -f "$source_path/zshrc" ] && [ -d "$source_path/../wezterm" ]; then
   source_path=$(CDPATH= cd "$source_path/.." && pwd)
 fi
 
+# WezTerm under WSL is the Windows app, which reads its config from the
+# Windows profile instead of the Linux home.
+get_wezterm_config_home() {
+  if grep -qi microsoft /proc/version 2>/dev/null && command -v wslpath >/dev/null 2>&1; then
+    windows_home=$(cd /mnt/c 2>/dev/null && cmd.exe /c 'echo %USERPROFILE%' 2>/dev/null | tr -d '\r')
+
+    case "$windows_home" in
+      ?:*)
+        printf '%s/.config\n' "$(wslpath "$windows_home")"
+        return
+        ;;
+    esac
+
+    echo "Could not find the Windows profile; installing WezTerm config under $config_home" >&2
+  fi
+
+  printf '%s\n' "$config_home"
+}
+
+wezterm_config_home=$(get_wezterm_config_home)
+
 [ -n "$archive_url" ] || archive_url="https://codeload.github.com/tihaya-anon/tihaya-anon.github.io/tar.gz/$ref"
 
 # Each line maps a file in dotfiles to its install target.
@@ -128,7 +149,7 @@ zsh/zprofile $HOME/.zprofile
 zsh/zshrc $HOME/.zshrc
 zsh/zsh_aliases $HOME/.zsh_aliases
 zsh/starship.toml $config_home/starship.toml
-wezterm/wezterm.lua $config_home/wezterm/wezterm.lua
+wezterm/wezterm.lua $wezterm_config_home/wezterm/wezterm.lua
 opencode/cli.json $config_home/opencode/cli.json"
 
 plugins="zsh-autosuggestions zsh-syntax-highlighting"
