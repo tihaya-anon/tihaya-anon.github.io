@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="Abstract geometric blog cover">
+  <g fill="none"><line x1="870.6" y1="-62.3" x2="1044.4" y2="-62.3" transform="rotate(22.5 870.6 -62.3)" stroke="#ae2679" stroke-width="9" stroke-linecap="round" opacity="0.37"/>
+  <line x1="1046.0" y1="-48.6" x2="1267.8" y2="-48.6" transform="rotate(157.5 1046.0 -48.6)" stroke="#ae2679" stroke-width="14" stroke-linecap="round" opacity="0.40"/>
+  <line x1="750.4" y1="332.0" x2="970.7" y2="332.0" transform="rotate(112.5 750.4 332.0)" stroke="#ae2679" stroke-width="12" stroke-linecap="round" opacity="0.40"/>
+  <line x1="1166.0" y1="629.5" x2="1495.3" y2="629.5" transform="rotate(67.5 1166.0 629.5)" stroke="#6bb8db" stroke-width="11" stroke-linecap="round" opacity="0.51"/>
+  <line x1="17.0" y1="39.0" x2="163.5" y2="39.0" transform="rotate(67.5 17.0 39.0)" stroke="#ae2679" stroke-width="15" stroke-linecap="round" opacity="0.58"/>
+  <line x1="187.4" y1="53.1" x2="506.9" y2="53.1" transform="rotate(157.5 187.4 53.1)" stroke="#215b9a" stroke-width="10" stroke-linecap="round" opacity="0.45"/></g>
+  <g transform="translate(218.4 274.9) rotate(176.4) scale(3.20) translate(-50 -50)"><path
+    d="M 50 50 C 63 38.8, 63 21.3, 50 15 C 37 21.3, 37 38.8, 50 50 C 66.86 53.18, 80.54 42.27, 77.36 28.18 C 64.33 21.94, 50.65 32.85, 50 50 C 58.03 65.17, 75.09 69.06, 84.12 57.79 C 80.87 43.71, 63.81 39.82, 50 50 C 43.15 65.73, 50.74 81.5, 65.19 81.53 C 74.17 70.22, 66.57 54.45, 50 50 C 33.43 54.45, 25.83 70.22, 34.81 81.53 C 49.26 81.5, 56.85 65.73, 50 50 C 36.19 39.82, 19.13 43.71, 15.88 57.79 C 24.91 69.06, 41.97 65.17, 50 50 C 49.35 32.85, 35.67 21.94, 22.64 28.18 C 19.46 42.27, 33.14 53.18, 50 50"
+    fill="none"
+    stroke="#215b9a"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  /></g>
+</svg>
