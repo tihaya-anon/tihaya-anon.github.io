@@ -87,6 +87,14 @@ config.tab_max_width = 28
 -- a title; an empty line clears it so the tab follows the running program
 -- again, and Escape cancels without changing anything.
 config.keys = {
+  -- The default CTRL+SHIFT+T opens the new tab in the current pane's domain,
+  -- so a tab opened from PowerShell would start cmd instead of WSL. Always use
+  -- the default domain instead.
+  {
+    key = "T",
+    mods = "CTRL|SHIFT",
+    action = wezterm.action.SpawnTab("DefaultDomain"),
+  },
   {
     key = "E",
     mods = "CTRL|SHIFT",
@@ -116,6 +124,35 @@ if is_windows then
     mods = "CTRL|SHIFT",
     action = wezterm.action.ShowLauncherArgs({ flags = "FUZZY|LAUNCH_MENU_ITEMS" }),
   })
+
+  -- A split stays in the current pane's domain, and the local domain starts
+  -- cmd by default, so splitting PowerShell would give cmd. Split a Windows
+  -- pane with the shell it runs instead: cmd for cmd, PowerShell otherwise.
+  -- WSL panes keep the default.
+  local function split(direction)
+    return wezterm.action_callback(function(window, pane)
+      local command = { domain = "CurrentPaneDomain" }
+
+      if pane:get_domain_name() == "local" then
+        local process = (pane:get_foreground_process_name() or ""):lower()
+        command.args = process:find("cmd%.exe$") and { "cmd.exe" } or { "powershell.exe", "-NoLogo" }
+      end
+
+      window:perform_action(wezterm.action.SplitPane({ direction = direction, command = command }), pane)
+    end)
+  end
+
+  -- Replace every variant of the default split bindings.
+  for _, binding in ipairs({
+    { key = '"', mods = "CTRL|ALT", direction = "Down" },
+    { key = '"', mods = "CTRL|SHIFT|ALT", direction = "Down" },
+    { key = "'", mods = "CTRL|SHIFT|ALT", direction = "Down" },
+    { key = "%", mods = "CTRL|ALT", direction = "Right" },
+    { key = "%", mods = "CTRL|SHIFT|ALT", direction = "Right" },
+    { key = "5", mods = "CTRL|SHIFT|ALT", direction = "Right" },
+  }) do
+    table.insert(config.keys, { key = binding.key, mods = binding.mods, action = split(binding.direction) })
+  end
 end
 
 -- Pick up edits to this file without restarting, and pick up appearance
