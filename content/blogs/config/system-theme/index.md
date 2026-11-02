@@ -3,16 +3,16 @@ title: "Theme-aware Terminal"
 weight: 8
 date: 2026-11-01
 draft: false
-description: "One palette across WezTerm, Starship, OpenCode, and Neovim: let the terminal follow the system appearance, then let every layer inherit from it."
-summary: "One palette across WezTerm, Starship, OpenCode, and Neovim: let the terminal follow the system appearance, then let every layer inherit from it."
-tags: ["wezterm", "starship", "opencode", "neovim", "terminal", "theme", "config"]
+description: "One palette across WezTerm, Starship, OpenCode, Claude Code, and Neovim: let the terminal follow the system appearance, then let every layer inherit from it."
+summary: "One palette across WezTerm, Starship, OpenCode, Claude Code, and Neovim: let the terminal follow the system appearance, then let every layer inherit from it."
+tags: ["wezterm", "starship", "opencode", "claude-code", "neovim", "terminal", "theme", "config"]
 ---
 
 A dark terminal in a light desktop is a flash of glare every time the window
 changes focus. This setup makes the terminal own the palette instead of
 teaching every tool to read the desktop on its own: WezTerm follows the system
-appearance and hands it on to Starship, OpenCode inherits its palette, and
-Neovim checks the OS directly because a full-screen application cannot see the
+appearance and hands it on to Starship and Claude Code, OpenCode inherits its
+palette, and Neovim checks the OS directly because a full-screen application cannot see the
 terminal palette.
 
 ## Install on a new machine
@@ -53,7 +53,7 @@ sh scripts/install-theme-config.sh
 
 The [Zsh installer](/blogs/config/zsh-config/#install-on-a-new-machine) writes
 the same three theme files and also handles `~/.zshrc`, which holds the
-Starship palette hook, `~/.zprofile`, and the
+Starship and Claude Code appearance hooks, `~/.zprofile`, and the
 plugins. Running either script is enough; run both and the second one reports
 the shared files as up to date.
 
@@ -64,16 +64,17 @@ Font still need to be installed separately.
 
 This is the current setup:
 
-| Layer    | Appearance source                  | How it switches                            |
-| -------- | ---------------------------------- | ------------------------------------------ |
-| WezTerm  | Desktop appearance API             | Reloads the config when the system changes |
-| Starship | Appearance file written by WezTerm | Picks Mocha or Latte before each prompt    |
-| OpenCode | Terminal palette and appearance    | Follows the terminal while the TUI runs    |
-| Neovim   | OS settings, not the terminal      | Refreshes on focus and resume              |
+| Layer       | Appearance source                          | How it switches                            |
+| ----------- | ------------------------------------------ | ------------------------------------------ |
+| WezTerm     | Desktop appearance API                     | Reloads the config when the system changes |
+| Starship    | Appearance file written by WezTerm         | Picks Mocha or Latte before each prompt    |
+| OpenCode    | Terminal palette and appearance            | Follows the terminal while the TUI runs    |
+| Claude Code | Terminal background, else `COLORFGBG`      | Checks when a session starts               |
+| Neovim      | OS settings, not the terminal              | Refreshes on focus and resume              |
 
 The terminal is the only place that needs a desktop-specific check. Starship
-reads the result from a file WezTerm leaves behind, and OpenCode reads the
-terminal's reported appearance.
+and the `COLORFGBG` fallback read the result from a file WezTerm leaves behind,
+and OpenCode reads the terminal's reported appearance.
 
 {{< mermaid >}}
 flowchart TB
@@ -82,6 +83,8 @@ flowchart TB
     B --> D["appearance file"]
     D --> E["zsh precmd hook"]
     E --> F["Starship Latte or Mocha palette"]
+    E --> J["COLORFGBG"]
+    J --> K["Claude Code light or dark theme"]
     C --> G["OpenCode TUI"]
     A --> H["Neovim system theme helper"]
     H --> I["Catppuccin Latte or Mocha"]
@@ -89,7 +92,7 @@ flowchart TB
 
 Neovim is the exception: it does not trust terminal colors and runs its own
 detection, which is covered in the [Neovim config](/blogs/config/neovim-config/)
-post. The other three are new.
+post. The others are new.
 
 ## WezTerm
 
@@ -152,6 +155,17 @@ config.set_environment_variables = {
   WSLENV = "TERM:COLORTERM:TERM_PROGRAM:TERM_PROGRAM_VERSION:WEZTERM_APPEARANCE_FILE/p",
 }
 
+-- On Windows, open new windows and tabs in WSL instead of PowerShell.
+-- WezTerm builds one WSL:<distro> domain per installed distro; use the first
+-- one it finds. The domain starts in the Linux home.
+if is_windows then
+  local wsl_domains = wezterm.default_wsl_domains()
+
+  if #wsl_domains > 0 then
+    config.default_domain = wsl_domains[1].name
+  end
+end
+
 -- The CN build of Maple Mono NF carries the CJK glyphs itself.
 config.font = wezterm.font("Maple Mono NF CN")
 config.font_size = 12.0
@@ -172,6 +186,24 @@ config.use_fancy_tab_bar = false
 config.hide_tab_bar_if_only_one_tab = true
 config.tab_max_width = 28
 
+-- WezTerm has no default binding for renaming a tab. CTRL+SHIFT+E prompts for
+-- a title; an empty line clears it so the tab follows the running program
+-- again, and Escape cancels without changing anything.
+config.keys = {
+  {
+    key = "E",
+    mods = "CTRL|SHIFT",
+    action = wezterm.action.PromptInputLine({
+      description = "Rename tab (empty to reset)",
+      action = wezterm.action_callback(function(window, _, line)
+        if line then
+          window:active_tab():set_title(line)
+        end
+      end),
+    }),
+  },
+}
+
 -- Pick up edits to this file without restarting, and pick up appearance
 -- changes without touching the file at all.
 config.automatically_reload_config = true
@@ -180,7 +212,7 @@ config.check_for_updates = false
 return config
 ```
 
-Two details are easy to miss.
+A few details are easy to miss.
 
 `wezterm.gui` is only available in the GUI process. The mux server also
 evaluates the config, so calling `wezterm.gui.get_appearance()` without a guard
@@ -199,8 +231,20 @@ in `WSLENV`, and the `/p` flag converts `C:\Users\...` to `/mnt/c/Users/...` on
 the way in. WezTerm's own four variables are listed too, so they keep reaching
 WSL even if this setting replaces the value WezTerm would have built.
 
+On Windows, `default_domain` makes every new window and tab a WSL shell.
+`wezterm.default_wsl_domains()` returns one `WSL:<distro>` domain per installed
+distro, and the config takes the first one. With several distros installed,
+name the one you want instead, for example
+`config.default_domain = "WSL:Ubuntu"`. Other platforms skip the block.
+
 The font is the CN build of Maple Mono NF, which carries the code, prompt, and
 Chinese glyphs in one family, so no fallback chain is needed.
+
+The rest is tab handling. WezTerm closes a tab with `Ctrl+Shift+W` out of the
+box but has no binding to rename one, so `Ctrl+Shift+E` asks for a title and
+sets it with `tab:set_title()`. Submitting an empty title resets the tab to the
+running program's name. With `hide_tab_bar_if_only_one_tab`, the title only
+shows once a second tab is open.
 
 ## Starship
 
@@ -546,6 +590,50 @@ then agree on the flavor even if one of them updates its built-in palette.
 
 The TUI watches `cli.json` and applies valid edits without a restart.
 
+## Claude Code
+
+Claude Code's `theme` setting has an `auto` value, shown in `/config` as
+**Auto (match terminal)**:
+
+```json
+{
+  "theme": "auto"
+}
+```
+
+With `auto`, Claude Code asks the terminal for its background color with an
+OSC 11 query when a session starts, and picks its light or dark theme from the
+answer. It asks again only when the terminal sends a color-scheme change
+notification (DEC mode 2031); there is no polling and no check on focus.
+
+When nothing answers the query, Claude Code falls back to `COLORFGBG`, and
+without that to dark. Under WSL the query can go unanswered, so a light
+WezTerm still got dark diffs. `COLORFGBG` is an old convention of
+`foreground;background` color indexes, where a background of 0 to 6 or 8 means
+dark and anything else up to 15 means light. A precmd hook in `~/.zshrc`
+derives it from the same appearance file Starship reads:
+
+```zsh
+# Claude Code's auto theme asks the terminal for its background color and falls
+# back to COLORFGBG when nothing answers, as can happen under WSL. Background
+# 15 reads as light, 0 as dark.
+terminal_colorfgbg() {
+    [[ -r $WEZTERM_APPEARANCE_FILE ]] || return
+
+    if [[ $(<$WEZTERM_APPEARANCE_FILE) == light* ]]; then
+        export COLORFGBG='0;15'
+    else
+        export COLORFGBG='15;0'
+    fi
+}
+add-zsh-hook precmd terminal_colorfgbg
+```
+
+The variable only reaches programs started after the next prompt, so a running
+session keeps its theme after a desktop switch. Start a new session to pick up
+the other one. When the terminal does answer the query, that answer wins and
+the variable is ignored.
+
 ## Neovim
 
 Neovim already follows the system through
@@ -575,8 +663,9 @@ wezterm show-keys >/dev/null    # config parses
 cat "$WEZTERM_APPEARANCE_FILE"  # light or dark, written by WezTerm
 starship prompt                 # Mocha, or Latte via STARSHIP_CONFIG
 opencode                        # Ctrl+P, Open settings, Theme
+echo "$COLORFGBG"               # 0;15 in light, 15;0 in dark
 ```
 
 Switch the desktop between light and dark. WezTerm should repaint immediately,
-Starship on the next command, OpenCode while it is open, and Neovim when it
-regains focus.
+Starship on the next command, OpenCode while it is open, Claude Code in the
+next session, and Neovim when it regains focus.

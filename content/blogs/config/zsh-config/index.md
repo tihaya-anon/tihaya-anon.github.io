@@ -284,6 +284,19 @@ starship_theme() {
 autoload -Uz add-zsh-hook
 (( $+commands[starship] )) && add-zsh-hook precmd starship_theme
 
+# Claude Code's auto theme asks the terminal for its background color and falls
+# back to COLORFGBG when nothing answers, as can happen under WSL. Background
+# 15 reads as light, 0 as dark.
+terminal_colorfgbg() {
+    [[ -r $WEZTERM_APPEARANCE_FILE ]] || return
+
+    if [[ $(<$WEZTERM_APPEARANCE_FILE) == light* ]]; then
+        export COLORFGBG='0;15'
+    else
+        export COLORFGBG='15;0'
+    fi
+}
+add-zsh-hook precmd terminal_colorfgbg
 
 # Plugins are cloned by the installer. Syntax highlighting must load last.
 zsh_plugins="${XDG_DATA_HOME:-$HOME/.local/share}/zsh/plugins"
@@ -410,7 +423,9 @@ alias tg='terragrunt'
 separate file. The config draws a Catppuccin powerline bar from the Mocha
 palette, and the `starship_theme` precmd hook swaps in a Latte copy whenever
 WezTerm reports a light appearance. The full file and the reasoning are in
-[Theme-aware Terminal](/blogs/config/system-theme/#starship).
+[Theme-aware Terminal](/blogs/config/system-theme/#starship). The
+`terminal_colorfgbg` hook reads the same file for Claude Code, as described in
+[the Claude Code section](/blogs/config/system-theme/#claude-code).
 
 The installer copies `dotfiles/zsh/starship.toml` to
 `${XDG_CONFIG_HOME:-$HOME/.config}/starship.toml` together with the shell
