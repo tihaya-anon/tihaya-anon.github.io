@@ -95,30 +95,54 @@ fi
 
 # WezTerm under WSL is the Windows app, which reads its config from the
 # Windows profile instead of the Linux home.
-get_wezterm_config_home() {
-  if grep -qi microsoft /proc/version 2>/dev/null && command -v wslpath >/dev/null 2>&1; then
-    windows_home=$(cd /mnt/c 2>/dev/null && cmd.exe /c 'echo %USERPROFILE%' 2>/dev/null | tr -d '\r')
+wezterm_config_home="$config_home"
+windows_home=""
 
-    case "$windows_home" in
-      ?:*)
-        printf '%s/.config\n' "$(wslpath "$windows_home")"
-        return
-        ;;
-    esac
+if grep -qi microsoft /proc/version 2>/dev/null && command -v wslpath >/dev/null 2>&1; then
+  windows_home=$(cd /mnt/c 2>/dev/null && cmd.exe /c 'echo %USERPROFILE%' 2>/dev/null | tr -d '\r')
 
-    echo "Could not find the Windows profile; installing WezTerm config under $config_home" >&2
-  fi
+  case "$windows_home" in
+    ?:*)
+      windows_home=$(wslpath "$windows_home")
+      wezterm_config_home="$windows_home/.config"
+      ;;
+    *)
+      echo "Could not find the Windows profile; installing WezTerm config under $config_home" >&2
+      windows_home=""
+      ;;
+  esac
+fi
 
-  printf '%s\n' "$config_home"
-}
+# WezTerm checks $XDG_CONFIG_HOME/wezterm/wezterm.lua before ~/.wezterm.lua.
+# Install to whichever file is already active instead of shadowing it.
+if [ -n "$windows_home" ]; then
+  wezterm_legacy="$windows_home/.wezterm.lua"
+else
+  wezterm_legacy="$HOME/.wezterm.lua"
+fi
 
-wezterm_config_home=$(get_wezterm_config_home)
+wezterm_xdg="$wezterm_config_home/wezterm/wezterm.lua"
+
+if [ -f "$wezterm_xdg" ]; then
+  wezterm_file="$wezterm_xdg"
+elif [ -f "$wezterm_legacy" ]; then
+  wezterm_file="$wezterm_legacy"
+else
+  wezterm_file="$wezterm_xdg"
+fi
+
+wezterm_dir=$(dirname "$wezterm_file")
+wezterm_keys="$wezterm_dir/keys.txt"
+
+if [ -f "$wezterm_file" ]; then
+  echo "WezTerm: using existing config at $wezterm_file (backup will be created)" >&2
+fi
 
 [ -n "$archive_url" ] || archive_url="https://codeload.github.com/tihaya-anon/tihaya-anon.github.io/tar.gz/$ref"
 
 # Each line maps a file in dotfiles to its install target.
-file_map="wezterm/wezterm.lua $wezterm_config_home/wezterm/wezterm.lua
-wezterm/keys.txt $wezterm_config_home/wezterm/keys.txt
+file_map="wezterm/wezterm.lua $wezterm_file
+wezterm/keys.txt $wezterm_keys
 zsh/starship.toml $config_home/starship.toml
 opencode/cli.json $config_home/opencode/cli.json"
 

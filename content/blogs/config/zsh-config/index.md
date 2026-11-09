@@ -46,9 +46,10 @@ Check the plan without changing anything:
 curl -fsSL https://raw.githubusercontent.com/tihaya-anon/tihaya-anon.github.io/main/scripts/install-zsh-config.sh | sh -s -- --dry-run
 ```
 
-Use `--no-shell` to only install the files, and `--no-plugins` to skip the
-clones. If the repo is already cloned locally, run the same installer from the
-checkout:
+Run `--dry-run` first; the installer replaces whole files rather than merging
+local edits. Use `--no-shell` to only install the files, and `--no-plugins` to
+skip the clones. If the repo is already cloned locally, run the same installer
+from the checkout:
 
 ```sh
 sh scripts/install-zsh-config.sh
@@ -155,6 +156,9 @@ export VISUAL=nvim
 export UV_CACHE_DIR="${UV_CACHE_DIR:-/tmp/.cache/uv}"
 
 # Private machine-local exports and mirror settings. Loaded once per login, never committed.
+# .proxy_env is shared with bash when it exists; without it a zsh session has no
+# HTTP(S)_PROXY and commands that need a proxy go direct and time out.
+[[ -r "$HOME/.proxy_env" ]] && source "$HOME/.proxy_env"
 [[ -r "$HOME/.zsh_env" ]] && source "$HOME/.zsh_env"
 [[ -r "$HOME/.mirrors" ]] && source "$HOME/.mirrors"
 ```

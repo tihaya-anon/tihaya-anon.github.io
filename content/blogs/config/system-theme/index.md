@@ -38,6 +38,10 @@ Under WSL the terminal is the Windows build of WezTerm, which never reads the
 Linux home. Both installers detect WSL, ask `cmd.exe` for `%USERPROFILE%`, and
 write `wezterm.lua` and `keys.txt` to `%USERPROFILE%\.config\wezterm\` instead.
 
+WezTerm checks `~/.config/wezterm/wezterm.lua` before `~/.wezterm.lua`. If the
+latter already exists, the installer writes to that file instead of adding a
+higher-priority config that would shadow it, and backs it up first.
+
 Check the plan without changing anything:
 
 ```sh
@@ -45,8 +49,9 @@ curl -fsSL https://raw.githubusercontent.com/tihaya-anon/tihaya-anon.github.io/m
 ```
 
 Use `--no-backup` to fail instead of replacing an existing file, or `--ref` to
-read the files from another branch. If the repo is already cloned locally, run
-the same installer from the checkout:
+read the files from another branch. The scripts replace whole files rather than
+merging local edits, so run `--dry-run` first and keep the timestamped backups.
+If the repo is already cloned locally, run the same installer from the checkout:
 
 ```sh
 sh scripts/install-theme-config.sh
