@@ -410,6 +410,11 @@ palette and fade on a light background.
 ```toml
 "$schema" = 'https://starship.rs/config-schema.json'
 
+# Language modules scan the directory for marker files on every prompt. Under
+# WSL, a cold listing of a Windows drive like /mnt/c can outlast the 30 ms
+# default and print a warning above the prompt, so allow a wider window.
+scan_timeout = 200
+
 format = """
 [](red)\
 $os\
@@ -623,6 +628,14 @@ clean while the prompt showed a `?`. Setting `use_git_executable = true` makes
 Starship ask git itself, which brings the prompt back in line with `git status`.
 It costs one git process per prompt, which is a fair trade for a status line
 that means what the command says.
+
+The `scan_timeout` line at the top is there for WSL. Before drawing the
+language modules, Starship lists the current directory to look for files such as
+`package.json` or `Cargo.toml`, and gives up after 30 ms by default. A cold
+listing of a Windows drive under `/mnt/c` goes through WSL's file share and can
+take longer, which prints a `Scanning current directory timed out` warning above
+the prompt. Allowing 200 ms keeps the scan quiet without slowing prompts in
+directories that answer quickly.
 
 ## OpenCode
 

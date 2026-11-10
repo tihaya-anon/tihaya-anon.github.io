@@ -1,5 +1,10 @@
 "$schema" = 'https://starship.rs/config-schema.json'
 
+# Language modules scan the directory for marker files on every prompt. Under
+# WSL, a cold listing of a Windows drive like /mnt/c can outlast the 30 ms
+# default and print a warning above the prompt, so allow a wider window.
+scan_timeout = 200
+
 format = """
 [](red)\
 $os\
